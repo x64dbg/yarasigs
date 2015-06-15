@@ -1,53 +1,64 @@
 rule CRC32_poly_Constants {
-        meta:
-                author = "_pusher_"
-                description = "Look for CRC32 [poly]"
-                date = "2015-05"
-                version = "0.1"
-        strings:
+	meta:
+		author = "_pusher_"
+		description = "Look for CRC32 [poly]"
+		date = "2015-05"
+		version = "0.1"
+	strings:
 		$c0 = { 2083B8ED }
-        condition:
-                $c0
+	condition:
+		$c0
 }
 
 rule CRC32_table {
-        meta:
-                author = "_pusher_"
-                description = "Look for CRC32 table"
-                date = "2015-05"
-                version = "0.1"
-        strings:
-                $c0 = { 00 00 00 00 96 30 07 77 2C 61 0E EE BA 51 09 99 19 C4 6D 07 }
+	meta:
+		author = "_pusher_"
+		description = "Look for CRC32 table"
+		date = "2015-05"
+		version = "0.1"
+	strings:
+		$c0 = { 00 00 00 00 96 30 07 77 2C 61 0E EE BA 51 09 99 19 C4 6D 07 }
+	condition:
+		$c0
+}
 
-        condition:
-                $c0
+rule CRC32_table_lookup {
+	meta:
+		author = "_pusher_"
+		description = "CRC32 table lookup"
+		date = "2015-06"
+		version = "0.1"
+	strings:
+		$c0 = { 8B 54 24 08 85 D2 7F 03 33 C0 C3 83 C8 FF 33 C9 85 D2 7E 29 56 8B 74 24 08 57 8D 9B 00 00 00 00 0F B6 3C 31 33 F8 81 E7 FF 00 00 00 C1 E8 08 33 04 BD ?? ?? ?? ?? 41 3B CA 7C E5 5F 5E F7 D0 C3 }
+	condition:
+		$c0
 }
 
 rule Elf_Hash {
-        meta:
-                author = "_pusher_"
-                description = "Look for ElfHash"
-                date = "2015-06"
-                version = "0.2"
-        strings:
-                $c0 = { 53 56 33 C9 8B DA 4B 85 DB 7C 25 43 C1 E1 04 33 D2 8A 10 03 CA 8B D1 81 E2 00 00 00 F0 85 D2 74 07 8B F2 C1 EE 18 33 CE F7 D2 23 CA 40 4B 75 DC 8B C1 5E 5B C3 }
+	meta:
+		author = "_pusher_"
+		description = "Look for ElfHash"
+		date = "2015-06"
+		version = "0.3"
+	strings:
+		$c0 = { 53 56 33 C9 8B DA 4B 85 DB 7C 25 43 C1 E1 04 33 D2 8A 10 03 CA 8B D1 81 E2 00 00 00 F0 85 D2 74 07 8B F2 C1 EE 18 33 CE F7 D2 23 CA 40 4B 75 DC 8B C1 5E 5B C3 }
 		$c1 = { 53 33 D2 85 C0 74 2B EB 23 C1 E2 04 81 E1 FF 00 00 00 03 D1 8B CA 81 E1 00 00 00 F0 85 C9 74 07 8B D9 C1 EB 18 33 D3 F7 D1 23 D1 40 8A 08 84 C9 75 D7 8B C2 5B C3 }
 		$c2 = { 53 56 33 C9 8B D8 85 D2 76 23 C1 E1 04 33 C0 8A 03 03 C8 8B C1 25 00 00 00 F0 85 C0 74 07 8B F0 C1 EE 18 33 CE F7 D0 23 C8 43 4A 75 DD 8B C1 5E 5B C3 }
 		$c3 = { 53 56 57 8B F2 8B D8 8B FB 53 E8 ?? ?? ?? ?? 6B C0 02 71 05 E8 ?? ?? ?? ?? 8B D7 33 C9 8B D8 83 EB 01 71 05 E8 ?? ?? ?? ?? 85 DB 7C 2C 43 C1 E1 04 0F B6 02 03 C8 71 05 E8 ?? ?? ?? ?? 83 C2 01 B8 00 00 00 F0 23 C1 85 C0 74 07 8B F8 C1 EF 18 33 CF F7 D0 23 C8 4B 75 D5 8B C1 99 F7 FE 8B C2 85 C0 7D 09 03 C6 71 05 E8 ?? ?? ?? ?? 5F 5E 5B C3 }
 		$c4 = { 53 33 D2 EB 2C 8B D9 80 C3 BF 80 EB 1A 73 03 80 C1 20 C1 E2 04 81 E1 FF 00 00 00 03 D1 8B CA 81 E1 00 00 00 F0 8B D9 C1 EB 18 33 D3 F7 D1 23 D1 40 8A 08 84 C9 75 CE 8B C2 5B C3 }
 		$c5 = { 89 C2 31 C0 85 D2 74 30 2B 42 FC 74 2B 89 C1 29 C2 31 C0 53 0F B6 1C 11 01 C3 8D 04 1B C1 EB 14 8D 04 C5 00 00 00 00 81 E3 00 0F 00 00 31 D8 83 C1 01 75 E0 C1 E8 04 5B C3 }
-        condition:
-                any of them
+		$c6 = { 53 33 D2 85 C0 74 38 EB 30 8B D9 80 C3 BF 80 EB 1A 73 03 80 C1 20 C1 E2 04 81 E1 FF 00 00 00 03 D1 8B CA 81 E1 00 00 00 F0 85 C9 74 07 8B D9 C1 EB 18 33 D3 F7 D1 23 D1 40 8A 08 84 C9 75 CA 8B C2 5B C3 }
+	condition:
+		any of them
 }
 
-
 rule BLOWFISH_Constants {
-        meta:
-                author = "phoul (@phoul)"
-                description = "Look for Blowfish constants"
-                date = "2014-01"
-                version = "0.1"
-        strings:
+	meta:
+		author = "phoul (@phoul)"
+		description = "Look for Blowfish constants"
+		date = "2014-01"
+		version = "0.1"
+	strings:
 		$c0 = { D1310BA6 }
 		$c1 = { A60B31D1 }	
 		$c2 = { 98DFB5AC }
@@ -61,16 +72,16 @@ rule BLOWFISH_Constants {
 		$c10 = { F64C261C }
 		$c11 = { 1C264CF6 }
 	condition:
-                6 of them
+		6 of them
 }
 
 rule MD5_Constants {
-        meta:
-                author = "phoul (@phoul)"
-                description = "Look for MD5 constants"
-                date = "2014-01"
-                version = "0.2"
-        strings:
+	meta:
+		author = "phoul (@phoul)"
+		description = "Look for MD5 constants"
+		date = "2014-01"
+		version = "0.2"
+	strings:
 		// Init constants
 		$c0 = { 67452301 }
 		$c1 = { efcdab89 }
@@ -84,33 +95,33 @@ rule MD5_Constants {
 		$c8 = { F4D50d87 }
 		$c9 = { 78A46AD7 }
 	condition:
-                5 of them
+		5 of them
 }
 
 rule RC6_Constants {
-        meta:
-                author = "chort (@chort0)"
-                description = "Look for RC6 magic constants in binary"
-                reference = "https://twitter.com/mikko/status/417620511397400576"
-                reference2 = "https://twitter.com/dyngnosis/status/418105168517804033"
-                date = "2013-12"
-                version = "0.2"
-        strings:
-                $c1 = { B7E15163 }
-                $c2 = { 9E3779B9 }
-                $c3 = { 6351E1B7 }
-                $c4 = { B979379E }
-        condition:
-                2 of them
+	meta:
+		author = "chort (@chort0)"
+		description = "Look for RC6 magic constants in binary"
+		reference = "https://twitter.com/mikko/status/417620511397400576"
+		reference2 = "https://twitter.com/dyngnosis/status/418105168517804033"
+		date = "2013-12"
+		version = "0.2"
+	strings:
+		$c1 = { B7E15163 }
+		$c2 = { 9E3779B9 }
+		$c3 = { 6351E1B7 }
+		$c4 = { B979379E }
+	condition:
+		2 of them
 }
 
 rule RIPEMD160_Constants {
-        meta:
-                author = "phoul (@phoul)"
-                description = "Look for RIPEMD-160 constants"
-                date = "2014-01"
-                version = "0.1"
-        strings:
+	meta:
+		author = "phoul (@phoul)"
+		description = "Look for RIPEMD-160 constants"
+		date = "2014-01"
+		version = "0.1"
+	strings:
 		$c0 = { 67452301 }
 		$c1 = { EFCDAB89 }
 		$c2 = { 98BADCFE }
@@ -124,13 +135,14 @@ rule RIPEMD160_Constants {
 	condition:
 		5 of them
 }
+
 rule SHA1_Constants {
-        meta:
-                author = "phoul (@phoul)"
-                description = "Look for SHA1 constants"
-                date = "2014-01"
-                version = "0.1"
-        strings:
+	meta:
+		author = "phoul (@phoul)"
+		description = "Look for SHA1 constants"
+		date = "2014-01"
+		version = "0.1"
+	strings:
 		$c0 = { 67452301 }
 		$c1 = { EFCDAB89 }
 		$c2 = { 98BADCFE }
@@ -142,16 +154,16 @@ rule SHA1_Constants {
 		$c8 = { 76543210 }
 		$c9 = { F0E1D2C3 }
 	condition:
-                5 of them
+		5 of them
 }
 
 rule SHA512_Constants {
-        meta:
-                author = "phoul (@phoul)"
-                description = "Look for SHA384/SHA512 constants"
-                date = "2014-01"
-                version = "0.1"
-        strings:
+	meta:
+		author = "phoul (@phoul)"
+		description = "Look for SHA384/SHA512 constants"
+		date = "2014-01"
+		version = "0.1"
+	strings:
 		$c0 = { 428a2f98 }
 		$c1 = { 982F8A42 }
 		$c2 = { 71374491 }
@@ -167,18 +179,18 @@ rule SHA512_Constants {
 }
 
 rule WHIRLPOOL_Constants {
-        meta:
-                author = "phoul (@phoul)"
-                description = "Look for WhirlPool constants"
-                date = "2014-02"
-                version = "0.1"
-        strings:
+	meta:
+		author = "phoul (@phoul)"
+		description = "Look for WhirlPool constants"
+		date = "2014-02"
+		version = "0.1"
+	strings:
 		$c0 = { 18186018c07830d8 }
 		$c1 = { d83078c018601818 }
 		$c2 = { 23238c2305af4626 }
 		$c3 = { 2646af05238c2323 }
 	condition:
-                2 of them
+		2 of them
 }
 
 rule DarkEYEv3_Cryptor {
@@ -263,7 +275,6 @@ rule FGint_MontgomeryModExp
 		any of them
 }
 
-
 rule FGint_FGIntModExp
 {	meta:
 		author = "_pusher_"
@@ -274,7 +285,6 @@ rule FGint_FGIntModExp
 	condition:
 		$c0
 }
-
 
 rule FGint_MulByInt
 {	meta:
@@ -298,7 +308,6 @@ rule FGint_DivMod
 		$c0
 }
 
-
 rule FGint_FGIntDestroy
 {	meta:
 		author = "_pusher_"
@@ -309,7 +318,6 @@ rule FGint_FGIntDestroy
 	condition:
 		$c0
 }
-
 
 rule FGint_Base10StringToGInt
 {	meta:
@@ -337,7 +345,6 @@ rule FGint_ConvertBase256to64
 		$c0
 }
 
-
 rule FGint_ConvertHexStringToBase256String
 {	meta:
 		author = "_pusher_"
@@ -350,7 +357,6 @@ rule FGint_ConvertHexStringToBase256String
 		$c0
 }
 
-
 rule FGint_Base256StringToGInt
 {	meta:
 		author = "_pusher_"
@@ -361,7 +367,6 @@ rule FGint_Base256StringToGInt
 	condition:
 		$c0
 }
-
 
 rule FGint_FGIntToBase256String
 {	meta:
@@ -376,7 +381,6 @@ rule FGint_FGIntToBase256String
 		any of them
 }
 
-
 rule FGint_ConvertBase256StringToHexString
 {	meta:
 		author = "_pusher_"
@@ -387,7 +391,6 @@ rule FGint_ConvertBase256StringToHexString
 	condition:
 		$c0
 }
-
 
 rule FGint_RSAEncrypt
 {	meta:
@@ -434,7 +437,6 @@ rule FGint_ECAddPoints
 		$c0
 }
 
-
 rule FGint_ECPointKMultiple
 {	meta:
 		author = "_pusher_"
@@ -447,8 +449,6 @@ rule FGint_ECPointKMultiple
 		$c0
 }
 
-
-
 rule FGint_ECPointDestroy
 {	meta:
 		author = "_pusher_"
@@ -460,7 +460,6 @@ rule FGint_ECPointDestroy
 	condition:
 		$c0
 }
-
 
 rule DES_Long
 {	meta:
@@ -483,7 +482,6 @@ rule DES_pbox_long
 	condition:
 		$c0
 }
-
 
 rule OpenSSL_BN_mod_exp2_mont
 {	meta:
@@ -534,7 +532,6 @@ rule OpenSSL_BN_mod_exp_inverse
 	condition:
 		$c0
 }
-
 
 rule FGint_RsaSign
 {	meta:
@@ -834,3 +831,22 @@ rule Miracl_mirsys_init
 		$c0
 }
 
+rule x509_public_key_infrastructure_cert
+{	meta:
+		desc = "X.509 PKI Certificate"
+		ext = "crt"
+	strings:
+		$c0 = { 30 82 ?? ?? 30 82 ?? ?? }
+	condition: 
+		$c0
+}
+
+rule pkcs8_private_key_information_syntax_standard
+{	meta:
+		desc = "Found PKCS #8: Private-Key"
+		ext = "key"
+	strings: 
+		$c0 = { 30 82 ?? ?? 02 01 00 }
+	condition:
+		$c0
+}
