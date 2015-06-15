@@ -798,3 +798,22 @@ rule Miracl_mirsys_init
 	condition:
 		$pattern
 }
+
+rule x509_public_key_infrastructure_cert
+{
+  	meta:
+		author = "Storm Shadow"
+		description = "X.509 PKI Certificate"
+		ext = "crt"
+	strings: $a = {30 82 ?? ?? 30 82 ?? ??}
+  	condition: $a
+}
+
+rule pkcs8_private_key_information_syntax_standard
+{
+	meta:
+		desc = "Found PKCS #8: Private-Key"
+		ext = "key"
+	strings: $a = {30 82 ?? ?? 02 01 00}
+	condition: $a
+}
