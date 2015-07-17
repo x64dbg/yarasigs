@@ -1,0 +1,8 @@
+[submodule "citizenlab"]
+	path = citizenlab
+	url = https://github.com/citizenlab/malware-signatures.git
+  branch = master
+[submodule "Yara-Rules"]
+	path = Yara-Rules
+	url = https://github.com/Yara-Rules/rules.git
+  branch = master
