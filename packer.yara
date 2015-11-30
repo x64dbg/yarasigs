@@ -1854,8 +1854,6 @@ strings:
 condition:
 		$a0
 }
-	
-	
 
 rule aspack : Packer
 {
@@ -2176,7 +2174,20 @@ strings:
 condition:
 		$a0 at pe.entry_point or $a1 at pe.entry_point
 }
-	
+
+rule ASPackv2xxx : Alexey Solodovnikov
+{
+	meta:
+		author="_pusher_"
+		date = "2015-11"
+	strings:
+		$c0 = { 60 E8 03 00 00 00 E9 EB 04 5D 45 55 C3 }
+	condition:
+		pe.imports ("kernel32.dll","GetProcAddress") and
+		pe.imports ("kernel32.dll","GetModuleHandleA") and
+		pe.imports ("kernel32.dll","LoadLibraryA") and
+		$c0 at pe.entry_point
+}
 	
 
 rule ASProtect13321RegisteredAlexeySolodovnikov
@@ -2215,21 +2226,35 @@ strings:
 condition:
 		$a0
 }
-	
-rule ASProtect1xx
+
+rule ASProtect1xx : Alexey Solodovnikov
 {
 	meta:
 		author="_pusher_"
 		date = "2015-11"
 	strings:
 		$c0 = { 68 ?? ?? ?? ?? E8 01 00 00 00 C3 C3 }
-
 	condition:
 		pe.imports ("kernel32.dll","GetProcAddress") and
 		pe.imports ("kernel32.dll","GetModuleHandleA") and
 		pe.imports ("kernel32.dll","LoadLibraryA") and
 		$c0 at pe.entry_point
-}	
+}
+
+rule ASProtect133xAndUp : Alexey Solodovnikov
+{
+	meta:
+		author="_pusher_"
+		date = "2015-11"
+	strings:
+		$c0 = { 68 ?? ?? ?? ?? E8 01 00 00 00 C3 C3 }
+	condition:
+		pe.imports ("kernel32.dll","GetProcAddress") and
+		pe.imports ("kernel32.dll","GetModuleHandleA") and
+		pe.imports ("kernel32.dll","LoadLibraryA") and
+		pe.imports ("kernel32.dll","RaiseException") and
+		$c0 at pe.entry_point
+}
 
 rule ASProtectv10
 {
@@ -2781,19 +2806,6 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
-
-rule Borland 
-{
-      meta:
-		author="malware-lu"
-	strings:
-		$patternBorland = "Borland" wide ascii
-	condition:
-		$patternBorland 
-}
-
 
 rule BriefLzSig
 {
@@ -6155,8 +6167,6 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
 rule Frusionbiff
 {
@@ -6168,8 +6178,68 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule FSG100 : dulek xt
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		//if this is modified its not really FSG is it ?
+		$a0 = { 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
+condition:
+		$a0 at 0x334 and pe.entry_point == 0x200
+}
+
+rule FSG101 : bart xt
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		//if this is modified its not really FSG is it ?
+		$a0 = { 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
+condition:
+		$a0 at 0x333 and pe.entry_point == 0x200
+}
+
+rule FSG120 : dulek xt
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		//if this is modified its not really FSG is it ?
+		$a0 = { 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
+condition:
+		$a0 at 0x3B4 and pe.entry_point == 0x200
+}
+
+rule FSG133 : dulek xt
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		//if this is modified its not really FSG is it ?
+		$a0 = { 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
+		$a1 = { 46 53 47 21 }
+condition:
+		($a0 at 0x154) and ($a1 at 0x14)
+}
+
+rule FSG200 : bart xt
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		//if this is modified its not really FSG is it ?
+		$a0 = { 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 }
+		$a1 = { 46 53 47 21 }
+condition:
+		($a0 at 0x1F2) and ($a1 at 0x14) //and (pe.entry_point == 154)
+}
 
 rule FSG131dulekxt
 {
@@ -7211,19 +7281,30 @@ strings:
 condition:
 		$a0
 }
-	
 
-rule InnoSetupInstaller
+rule InnoSetupInstaller : Jordan Russel
 {
       meta:
 		author="_pusher_"
+		date = "2015-11"
 strings:
 		$a0 = { 72 44 6C 50 74 53 }
 		$a1 = { 49 6E 6E 6F 20 53 65 74 75 70 20 53 65 74 75 70 20 44 61 74 61 }
 
 condition:
 		$a0 and $a1
-}	
+}
+
+rule InnoSetupUnInstaller : Jordan Russel
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		$a0 = { 12 55 6E 69 6E 73 74 50 72 6F 67 72 65 73 73 46 6F 72 6D }
+condition:
+		uint32(0x30) == 0x6E556E49 and $a0
+}
 
 rule InstallAnywhere61ZeroGSoftwareInc
 {
@@ -7401,18 +7482,6 @@ strings:
 
 condition:
 		$a0 at pe.entry_point
-}
-	
-	
-
-rule java 
-{
-      meta:
-		author="malware-lu"
-	strings:
-		$patternjava = "java" wide ascii
-	condition:
-		$patternjava
 }
 
 rule JCAlg1Sig
@@ -8182,31 +8251,7 @@ strings:
 
 condition:
 		$a0 at pe.entry_point
-}
-
-rule MicrosoftVisualCV80
-{
-      meta:
-		author="malware-lu"
-strings:
-		$a0 = { 6A 14 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? BB 94 00 00 00 53 6A 00 8B ?? ?? ?? ?? ?? FF D7 50 FF ?? ?? ?? ?? ?? 8B F0 85 F6 75 0A 6A 12 E8 ?? ?? ?? ?? 59 EB 18 89 1E 56 FF ?? ?? ?? ?? ?? 56 85 C0 75 14 50 FF D7 50 FF ?? ?? ?? ?? ?? B8 }
-
-condition:
-		$a0 at pe.entry_point
-}
-
-rule MinGWGCC3x
-{
-      meta:
-		author="malware-lu"
-strings:
-		$a0 = { 55 89 E5 83 EC 08 C7 04 24 ?? 00 00 00 FF 15 ?? ?? ?? ?? E8 ?? ?? FF FF ?? ?? ?? ?? ?? ?? ?? ?? 55 }
-
-condition:
-		$a0 at pe.entry_point
-}
-	
-	
+}	
 
 rule Minke101byCodius
 {
@@ -8257,8 +8302,49 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule MoleBox_older_versions : Teggo Software Ltd
+{
+	meta:
+		author="_pusher_"
+		date = "2015-11"
+	strings:
+		$c0 = { E8 ?? ?? FF FF 58 E8 75 03 00 00 58 89 44 24 1C 61 FF E0 CC }
+		$c1 = { E8 ?? ?? FF FF 58 E8 55 07 00 00 58 89 44 24 ?? 61 58 58 FF D0 E8 }
+		$c9 = { E8 ?? ?? FF FF 58 E8 55 07 00 00 58 89 44 24 ?? 61 58 FF D0 E8 }
+		$c8 = { E8 ?? ?? ?? ?? 6A 00 54 6A 00 E8 ?? ?? ?? ?? 87 04 24 E8 ?? ?? ?? ?? 5F 5E 5E 89 EC 5D FF E0 }
+		$c2 = { 27 48 45 52 45 49 53 42 4F 4F 54 43 4F 44 45 27 }
+		$c3 = { 0D 4D 4F 4C 45 42 4F 58 32 }
+	condition:
+		pe.imports ("kernel32.dll","GetProcAddress") and
+		pe.imports ("kernel32.dll","GetModuleHandleA") and
+		pe.imports ("kernel32.dll","MultiByteToWideChar") and
+		pe.imports ("kernel32.dll","RaiseException") and
+		pe.imports ("kernel32.dll","LocalAlloc") and
+		pe.imports ("kernel32.dll","LocalFree") and
+		($c0 or $c1 or $c9 ) and ($c2 or $c3) or ($c8)
+}
+
+rule MoleBox_4xxx : DesaNova Ltda
+{ //needs more samples
+	meta:
+		author="_pusher_"
+		date = "2015-11"
+	strings:
+		$c0 = { E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 57 68 ?? ?? ?? ?? 56 E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? 50 E8 ?? ?? ?? ?? 57 E8 ?? ?? ?? ?? 55 68 ?? ?? ?? ?? 53 E8 ?? ?? ?? ?? 50 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 51 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 75 00 87 14 24 81 C4 ?? ?? ?? ?? 52 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 55 68 ?? ?? ?? ?? 50 57 E8 ?? ?? ?? ?? 55 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 39 DD 73 01 C3 59 E8 }
+		$c1 = { 85 00 E6 30 E8 EB 34 00 34 F5 C3 63 F3 8F 90 25 24 6A 00 89 15 F4 5D 6E 81 E1 F4 95 5E 08 83 47 DE B7 28 00 18 47 11 E1 17 09 7B 0F F9 88 81 8E E1 5A 52 F7 2B 80 FB 0A 6B 41 49 A6 00 00 00 00 28 25 30 38 78 29 20 25 30 32 78 20 25 30 32 78 20 25 30 32 78 20 25 30 32 78 20 25 30 32 78 20 25 30 32 78 20 25 30 32 78 20 25 30 32 78 0A 00 }
+	condition:
+		( pe.imports ("kernel32.dll","GetProcAddress") and
+		pe.imports ("kernel32.dll","GetModuleHandleA") and
+		pe.imports ("kernel32.dll","LoadLibraryA") and
+		pe.imports ("kernel32.dll","HeapCreate") and
+		pe.imports ("kernel32.dll","HeapDestroy") and
+		pe.imports ("kernel32.dll","HeapAlloc") and
+		pe.imports ("kernel32.dll","CreateFileA") and
+		pe.imports ("kernel32.dll","GetCurrentProcess") and
+		pe.imports ("kernel32.dll","VirtualProtect") and
+		$c0 ) or $c1
+}
 
 rule MoleBoxv20
 {
@@ -8309,49 +8395,24 @@ strings:
 condition:
 		$a0
 }
-	
-	
 
-rule MorphineV27Holy_FatherRatter29A
+rule Morphine : Holy_Father Ratter29A
 {
       meta:
-		author="malware-lu"
-strings:
-		$a0 = { 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 4B 65 52 6E 45 6C 33 32 2E 64 4C 6C 00 00 47 65 74 50 72 6F 63 41 64 64 72 }
-
+		author="_pusher_"
+		date = "2015-11"
+		description="Polymorphic Cryptor"
 condition:
-		$a0
+		(pe.number_of_sections>=2) and
+		(uint32(uint32(0x3C)+0x84) == 0x00000200) and
+		pe.sections[0].raw_data_offset == 0x00000400 and
+		pe.sections[1].virtual_size == 0x00001000 and
+		//checking for GetProcAddress
+		(uint32(pe.sections[1].raw_data_offset+0x4E) == 0x50746547) and
+		//double check
+		pe.imports ("kernel32.dll","GetProcAddress") and
+		pe.imports ("kernel32.dll","LoadLibraryA")
 }
-	
-	
-
-rule Morphinev27Holy_FatherRatter29A
-{
-      meta:
-		author="malware-lu"
-strings:
-		$a0 = { 00 00 00 00 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 }
-	$a1 = { 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C 00 00 47 65 74 50 72 6F 63 }
-
-condition:
-		$a0 or $a1
-}
-	
-	
-
-rule Morphinev33SilentSoftwareSilentShieldc2005
-{
-      meta:
-		author="malware-lu"
-strings:
-		$a0 = { 28 ?? ?? ?? 00 00 00 00 00 00 00 00 40 ?? ?? ?? 34 ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4C ?? ?? ?? 5C ?? ?? ?? 00 00 00 00 4C ?? ?? ?? 5C ?? ?? ?? 00 00 00 00 4B 65 52 6E 45 6C 33 32 2E 64 4C 6C 00 00 47 65 74 50 72 6F 63 }
-	$a1 = { 28 ?? ?? ?? 00 00 00 00 00 00 00 00 40 ?? ?? ?? 34 ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4C ?? ?? ?? 5C ?? ?? ?? 00 00 00 00 4C ?? ?? ?? 5C ?? ?? ?? 00 00 00 00 4B 65 52 6E 45 6C 33 32 2E 64 4C 6C 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 }
-
-condition:
-		$a0 or $a1
-}
-	
-	
 
 rule mPack002 : Delta Aziz
 {
@@ -9791,7 +9852,8 @@ condition:
 		$a0
 }
 	
-rule Nullsoft_NSIS {
+rule Nullsoft_NSIS : NullSoft
+{
 	meta:
 		author = "_pusher_"
 		description = "Nullsoft Installer"
@@ -18469,8 +18531,23 @@ strings:
 condition:
 		$a0
 }
-	
-	
+
+rule Themida_2xx : Oreans Technologies
+{
+      meta:
+		author="_pusher_"
+		date = "2015-11"
+strings:
+		$a0 = { E8 01 00 00 00 CC }
+		$a1 = { 80 3B CC 0F 85 5F 00 00 00 }
+		$a2 = { 80 3B CC 75 19 }
+		
+		$a3 = { 0F 85 51 FF FF FF 61 C9 C2 10 00 }
+		$a4 = { EB F2 5E 59 5B 58 C9 C2 10 00 }
+
+condition:
+		$a0 and ($a1 or $a2) and ($a3 or $a4)
+}
 
 rule theWRAPbyTronDoc
 {
