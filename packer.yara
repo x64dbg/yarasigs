@@ -949,13 +949,15 @@ rule aPlibSig : Jorgen Ibsen
 {
 		meta:
 		author="_pusher_"
-		date = "2015-11"
+		date="2016-03"
 	strings: 
 		$a0 = { 60 8B 74 24 24 8B 7C 24 28 8B 44 24 2C FC 33 DB B2 80 39 18 74 42 A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 }
 		$a1 = { 60 8B 74 24 24 8B 7C 24 28 FC 33 DB 33 D2 A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 }
 		$a3 = { 60 8B 74 24 24 8B 7C 24 28 FC B2 80 33 DB A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 }
+		$a4 = { 61 94 55 B6 80 A4 FF 13 73 F9 33 C9 FF 13 73 16 33 C0 FF 13 73 1F B6 80 41 B0 10 FF 13 12 C0 73 FA 75 3A AA EB E0 FF 53 08 02 F6 83 D9 01 75 0E FF 53 04 EB 24 AC D1 E8 74 2D 13 C9 EB 18 91 48 C1 E0 08 AC FF 53 04 3B 43 F8 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 8B C5 }
+		$a5 = { B2 80 31 DB A4 B3 02 E8 6D 00 00 00 73 F6 31 C9 E8 64 00 00 00 73 1C 31 C0 E8 5B 00 00 00 73 23 B3 02 41 B0 10 E8 4F 00 00 00 10 C0 73 F7 75 3F AA EB D4 E8 4D 00 00 00 29 D9 75 10 E8 42 00 00 00 EB 28 AC D1 E8 74 4D 11 C9 EB 1C 91 48 C1 E0 08 AC E8 2C 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 }
 	condition:
-		($a0 or $a1 or $a3)
+		($a0 or $a1 or $a3 or $a4 or $a5)
 }
 
 
@@ -5697,18 +5699,26 @@ condition:
 	
 	
 
+rule eXPressorPack15x : CGSoftLabs
+{
+	meta:
+		author="_pusher_"
+		date = "2016-02"
+	strings:
+		$a0 = { 8D 85 CC FD FF FF 50 6A 40 6A 04 FF B5 E4 FD FF FF FF 15 ?? ?? ?? ?? 8B 85 E4 FD FF FF 8B 8D B0 FD FF FF 89 08 8B 85 EC FD FF FF 83 C0 04 89 85 EC FD FF FF 8B 85 E4 FD FF FF 83 C0 04 89 85 E4 FD FF FF E9 2F FF FF FF 8B 85 BC FD FF FF 83 C0 14 89 85 BC FD FF FF E9 FD FD FF FF A1 ?? ?? ?? ?? 8B 0D ?? ?? ?? ?? 03 48 48 89 0D ?? ?? ?? ?? 83 3D ?? ?? ?? ?? 00 74 13 68 00 80 00 00 6A 00 FF 35 ?? ?? ?? ?? FF 15 ?? ?? ?? ?? A1 ?? ?? ?? ?? 5F 5E 5B 8B E5 5D 50 A1 ?? ?? ?? ?? 83 78 48 00 75 05 58 33 C0 40 C3 58 FF E0 }
+	condition:
+		$a0
+}
+
 rule eXPressorPacK150XCGSoftLabs
 {
 	meta:
 		author="malware-lu"
-strings:
+	strings:
 		$a0 = { 55 8B EC 81 EC ?? ?? ?? ?? 53 56 57 83 A5 ?? ?? ?? ?? ?? F3 EB 0C 65 58 50 72 2D 76 2E 31 2E 35 2E 00 83 7D 0C ?? 75 23 8B 45 08 A3 ?? ?? ?? ?? 6A 04 68 00 10 00 00 68 20 03 00 00 6A 00 FF 15 ?? ?? ?? ?? A3 ?? ?? ?? ?? EB 04 }
-
-condition:
+	condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
 rule eXPressorProtection150XCGSoftLabs
 {
@@ -6322,8 +6332,23 @@ rule FSG200 : bart xt
 		$a0 = { 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 }
 	condition:
 					//Time_Date_Stamp
-		($a0 at 0x1F2) and (pe.timestamp == 0x21475346) and (pe.entry_point == 154)
+		($a0 at 0x1F2) and (pe.timestamp == 0x21475346) and (pe.entry_point == 0x154)
 }
+
+rule FSGCrypt : EMBRACE
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+	strings:
+		//if this is modified its not really FSG is it ?
+		$a0 = { 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C 00 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
+		$a1 = { B8 ?? ?? ?? ?? B9 ?? ?? ?? ?? 80 34 08 ?? B8 46 D2 40 00 B9 ?? ?? ?? ?? 80 34 08 ?? E2 FA }
+	condition:
+					//Time_Date_Stamp
+		($a0 at 0x154) and (pe.timestamp == 0x52424D45) and ($a1 at pe.entry_point)
+}
+
 
 rule FSG131dulekxt
 {
@@ -7364,6 +7389,19 @@ strings:
 
 condition:
 		$a0
+}
+
+rule Induct_Delphi_Virus : Malware
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+		description = "Delphi malware / file infector"
+	strings:
+		$a0 = { 75 73 65 73 20 77 69 6E 64 6F 77 73 3B 20 76 61 72 20 73 63 3A 61 72 72 61 79 5B 31 2E 2E 32 34 5D 20 6F 66 20 73 74 72 69 6E 67 3D 28 00 00 00 FF FF FF FF 50 00 00 00 66 75 6E 63 74 69 6F 6E 20 78 28 73 3A 73 74 72 69 6E 67 29 3A 73 74 72 69 6E 67 3B 76 61 72 20 69 3A 69 6E 74 65 67 65 72 3B 62 65 67 69 6E 20 66 6F 72 20 69 3A 3D 31 20 74 6F 20 6C 65 6E 67 74 68 28 73 29 20 64 6F 20 69 66 20 73 5B 69 5D 00 00 00 00 FF FF FF FF 50 00 00 00 3D 23 33 36 20 74 68 65 6E 20 73 5B 69 5D 3A 3D 23 33 39 3B 72 65 73 75 6C 74 3A 3D 73 3B 65 6E 64 3B 70 72 6F 63 65 64 75 72 65 20 72 65 28 73 2C 64 2C 65 3A 73 74 72 69 6E 67 29 3B 76 61 72 20 66 31 2C 66 32 3A 74 65 78 74 66 69 6C 65 3B 00 00 00 00 FF FF FF FF 50 00 00 00 68 3A 63 61 72 64 69 6E 61 6C 3B 66 3A 53 54 41 52 54 55 50 49 4E 46 4F 3B 70 3A 50 52 4F 43 45 53 53 5F 49 4E 46 4F 52 4D 41 54 49 4F 4E 3B 62 3A 62 6F 6F 6C 65 61 6E 3B 74 31 2C 74 32 2C 74 33 3A 46 49 4C 45 54 49 4D 45 3B 62 65 67 69 6E 00 00 00 00 FF FF FF FF 50 00 00 00 68 3A 3D 43 72 }
+		$a1 = { 65 61 74 65 46 69 6C 65 28 70 63 68 61 72 28 64 2B 24 62 61 6B 24 29 2C 30 2C 30 2C 30 2C 33 2C 30 2C 30 29 3B 69 66 20 68 3C 3E 44 57 4F 52 44 28 2D 31 29 20 74 68 65 6E 20 62 65 67 69 6E 20 43 6C 6F 73 65 48 61 6E 64 6C 65 00 00 00 00 FF FF FF FF 50 00 00 00 28 68 29 3B 65 78 69 74 3B 65 6E 64 3B 7B 24 49 2D 7D 61 73 73 69 67 6E 66 69 6C 65 28 66 31 2C 73 29 3B 72 65 73 65 74 28 66 31 29 3B 69 66 20 69 6F 72 65 73 75 6C 74 3C 3E 30 20 74 68 65 6E 20 65 78 69 74 3B 61 73 73 69 67 6E 66 69 6C 65 00 00 00 00 FF FF FF FF 50 00 00 00 28 66 32 2C 64 2B 24 70 61 73 24 29 3B 72 65 77 72 69 74 65 28 66 32 29 3B 69 66 20 69 6F 72 65 73 75 6C 74 3C 3E 30 20 74 68 65 6E 20 62 65 67 69 6E 20 63 6C 6F 73 65 66 69 6C 65 28 66 31 29 3B 65 78 69 74 3B 65 6E 64 3B 20 77 68 69 6C 65 00 00 00 00 FF FF FF FF 50 00 00 00 6E 6F 74 20 65 6F 66 28 66 31 29 20 64 6F 20 62 65 67 69 6E 20 72 65 61 64 6C 6E 28 66 31 2C 73 29 3B 20 77 72 69 74 65 6C 6E 28 66 32 2C 73 29 3B 20 20 69 66 20 70 6F 73 28 24 69 6D 70 6C 65 6D 65 }
+	condition:
+		any of them
 }
 
 rule InnoSetupInstaller : Jordan Russel
@@ -8526,6 +8564,17 @@ condition:
 		$a0 at pe.entry_point
 }
 	
+rule mpress_071_212_Net : Matcode
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+	strings:
+		$a1 = { 21 49 74 27 73 20 2E 4E 45 54 20 45 58 45 24 }
+	condition:
+		$a1 at 45 and
+		pe.imports ("mscoree.dll","_CorExeMain")
+}
 
 rule mpress_077_x86 : Matcode
 {
@@ -9272,8 +9321,6 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
 rule NeoLitev20
 {
@@ -9285,8 +9332,6 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
 rule NeoLitev200
 {
@@ -9298,20 +9343,35 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
-rule NET 
+rule NeoLitevXX : NeoworxInc
 {
 	meta:
-		author="malware-lu"
+		author="_pusher_"
+		date = "2016-02"
 	strings:
-		
-		$patternnet = ".NET" wide ascii
+		$a0 = { 8B 44 24 04 23 05 ?? ?? ?? ?? 50 E8 5C 02 00 00 83 C4 04 FE 05 ?? ?? ?? ?? 0B C0 74 02 FF E0 8B E5 5D C2 0C 00 }
 	condition:
-		$patternnet
+		$a0
 }
 
+rule DotNET_Reactor
+{
+	meta:
+		author="_pusher_"
+		date="2016-06"
+	strings:		
+		$a0 = { 88 3C AC 15 71 FE DD E7 F7 0E 92 E2 BB 17 A2 CA 10 F3 0A 92 58 FB 7A F2 73 2F 2E 12 E1 FF A4 87 AD 9D 62 B1 8D E2 DD FB 99 68 FC 06 72 6E 1A 5D }
+		//v2
+		$a1 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 32 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 07 00 8C 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
+		//v4
+		$a2 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 34 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 07 00 8C 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
+	condition:
+		//$a0 in (pe.sections[1].raw_data_offset..pe.sections[2].raw_data_offset+pe.sections[2].raw_data_size)
+		//$a0 in ((pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)+50)
+		//need overlay since last section could be something else
+		any of them
+}
 
 
 rule NETDLLMicrosoft
@@ -11273,6 +11333,33 @@ condition:
 }
 	
 	
+rule PEBundlev02v40x
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+strings:
+		$a0 = { 9C 60 E8 02 ?? ?? ?? 33 C0 8B C4 83 C0 04 93 8B E3 8B 5B FC 81 EB ?? ?? ?? ?? 87 DD 83 BD }
+		//jcalg1
+		$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
+
+
+condition:
+		$a0 at pe.entry_point and $a1
+}
+
+rule PEBundlev02v30x
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+strings:
+		$a0 = { 9C 60 E8 02 ?? ?? ?? 33 C0 8B C4 83 C0 04 93 8B E3 8B 5B FC 81 EB ?? ?? ?? ?? 87 DD }
+		//jcalg1
+		$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
+condition:
+		$a0 at pe.entry_point and $a1
+}
 
 rule PEBundlev02v20x
 {
@@ -20049,7 +20136,7 @@ rule UPX_OEP_place
 		//older upx 0.76 - 0.84
 		$a3 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 8D BE ?? ?? ?? ?? 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB D8 FF 96 ?? ?? ?? ?? 61 E9 }
 		$a4 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 8D BE 00 60 00 00 8B 07 09 C0 74 3C 8B 5F 04 8D 84 30 10 85 00 00 01 F3 50 83 C7 08 FF 96 4C 85 00 00 95 8A 07 47 08 C0 74 DC 89 F9 57 48 F2 AE 55 FF 96 50 85 00 00 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 54 85 00 00 61 E9 }
-		$a5 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 5F 8B 07 09 C0 74 43 8B 5F 04 8D 84 30 C8 1E 07 00 01 F3 50 83 C7 08 FF 96 A4 1F 07 00 92 8A 07 47 08 C0 74 DC 52 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 52 FF 96 A8 1F 07 00 5A 09 C0 74 07 89 03 83 C3 04 EB D6 61 C3 61 E9 }
+		$a10 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 5F 8B 07 09 C0 74 43 8B 5F 04 8D 84 30 C8 1E 07 00 01 F3 50 83 C7 08 FF 96 A4 1F 07 00 92 8A 07 47 08 C0 74 DC 52 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 52 FF 96 A8 1F 07 00 5A 09 C0 74 07 89 03 83 C3 04 EB D6 61 C3 61 E9 }
 	condition:
 		any of them
 }
@@ -20624,6 +20711,19 @@ condition:
 		$a0 at pe.entry_point
 }
 	
+
+rule VeraCryptInstaller : IDRIX
+{
+	meta:
+		author="_pusher_"
+		date = "2016-03"
+		description = "Installer"
+	strings:
+		$a0 = { 54 43 49 4E 53 54 52 54 01 }
+	condition:
+		//pe.overlay would be nice ;)
+		$a0 at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)
+}
 	
 
 rule vfpexeNcV500WangJianGuo
