@@ -949,15 +949,15 @@ rule aPlibSig : Jorgen Ibsen
 {
 		meta:
 		author="_pusher_"
-		date="2016-03"
+		date="2016-06"
 	strings: 
 		$a0 = { 60 8B 74 24 24 8B 7C 24 28 8B 44 24 2C FC 33 DB B2 80 39 18 74 42 A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 }
 		$a1 = { 60 8B 74 24 24 8B 7C 24 28 FC 33 DB 33 D2 A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 }
 		$a3 = { 60 8B 74 24 24 8B 7C 24 28 FC B2 80 33 DB A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 }
 		$a4 = { 61 94 55 B6 80 A4 FF 13 73 F9 33 C9 FF 13 73 16 33 C0 FF 13 73 1F B6 80 41 B0 10 FF 13 12 C0 73 FA 75 3A AA EB E0 FF 53 08 02 F6 83 D9 01 75 0E FF 53 04 EB 24 AC D1 E8 74 2D 13 C9 EB 18 91 48 C1 E0 08 AC FF 53 04 3B 43 F8 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 8B C5 }
-		$a5 = { B2 80 31 DB A4 B3 02 E8 6D 00 00 00 73 F6 31 C9 E8 64 00 00 00 73 1C 31 C0 E8 5B 00 00 00 73 23 B3 02 41 B0 10 E8 4F 00 00 00 10 C0 73 F7 75 3F AA EB D4 E8 4D 00 00 00 29 D9 75 10 E8 42 00 00 00 EB 28 AC D1 E8 74 4D 11 C9 EB 1C 91 48 C1 E0 08 AC E8 2C 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 }
+		$a5 = { B2 80 31 DB A4 B3 02 E8 6D 00 00 00 73 F6 31 C9 E8 64 00 00 00 73 1C 31 C0 E8 5B 00 00 00 73 23 B3 02 41 B0 10 E8 4F 00 00 00 10 C0 73 F7 75 3F AA EB D4 E8 4D 00 00 00 29 D9 75 10 E8 42 00 00 00 EB 28 AC D1 E8 74 ?? 11 C9 EB 1C 91 48 C1 E0 08 AC E8 2C 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 }
 	condition:
-		($a0 or $a1 or $a3 or $a4 or $a5)
+		any of them
 }
 
 
@@ -7436,13 +7436,28 @@ rule InstallAnywhere61ZeroGSoftwareInc
 		author="malware-lu"
 strings:
 		$a0 = { 60 BE 00 A0 42 00 8D BE 00 70 FD FF 57 83 CD FF EB 10 90 90 90 90 90 90 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 31 C9 83 E8 03 72 0D C1 E0 }
-	$a1 = { 60 BE 00 A0 42 00 8D BE 00 70 FD FF 57 83 CD FF EB 10 90 90 90 90 90 90 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 }
+		$a1 = { 60 BE 00 A0 42 00 8D BE 00 70 FD FF 57 83 CD FF EB 10 90 90 90 90 90 90 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 }
 
 condition:
 		$a0 at pe.entry_point or $a1 at pe.entry_point
 }
 	
 	
+rule InstallShieldInstaller
+{
+	meta:
+		author="_pusher_"
+		date="2016-06"
+	strings:
+		//doest find all.. eg: 9.7.0.0 & 21.0.0.0
+		//unicode
+		$a0 = { 49 6E 73 74 61 6C 6C 53 68 69 65 6C 64 00 00 00 2E 74 65 78 74 00 00 00 2E 72 64 61 74 61 00 00 2E 64 65 62 75 67 00 00 5F 00 69 00 73 00 00 00 B8 E9 48 00 FF FF FF FF FF FF 00 00 53 00 65 00 72 00 76 00 69 00 63 00 65 00 50 00 61 00 63 00 6B 00 00 00 50 00 6C 00 61 00 74 00 66 00 6F 00 72 00 6D 00 49 00 64 00 00 00 00 00 42 00 75 00 69 00 6C 00 64 00 4E 00 6F 00 00 00 4D 00 69 00 6E 00 6F 00 72 00 56 00 65 00 72 00 4D 00 61 00 78 00 00 00 4D 00 69 00 6E 00 6F 00 72 00 56 00 65 00 72 00 00 00 00 00 4D 00 61 00 6A 00 6F 00 72 00 56 00 65 00 72 00 00 00 00 00 5F 00 4D 00 53 00 49 00 35 00 31 00 36 00 36 00 2E 00 5F 00 49 00 53 }
+		//normal
+		$a1 = { 49 6E 73 74 61 6C 6C 53 68 69 65 6C 64 00 00 00 2E 72 64 61 74 61 00 00 2E 64 65 62 75 67 00 00 D4 E9 43 00 FF FF FF FF FF FF 00 00 53 65 72 76 69 63 65 50 61 63 6B 00 50 6C 61 74 66 6F 72 6D 49 64 00 00 42 75 69 6C 64 4E 6F 00 4D 69 6E 6F 72 56 65 72 4D 61 78 00 4D 69 6E 6F 72 56 65 72 00 00 00 00 4D 61 6A 6F 72 56 65 72 00 00 00 00 5F 4D 53 49 35 31 36 36 2E 5F 49 53 }
+
+	condition:
+		any of them
+}
 
 rule InstallShield2000
 {
@@ -7552,7 +7567,7 @@ rule IsArmadillo
 {
 		meta:
 		author="_pusher_"
-		date = "2015-11"
+		date = "2016-06"
 	strings: 
 		$a0 = { 50 44 41 54 41 30 30 30 }
 		$a1 = { 00 00 00 52 36 30 30 39 0D 0A }
@@ -7590,7 +7605,10 @@ rule IsArmadillo
 	pe.entry_point == 0x63000 or  //6.60.0140
 	pe.entry_point == 0x5487B or //7.0 beta 3
 	pe.entry_point == 0x31000 or //7.0.021
-	pe.entry_point == 0x6F1FE //xxx	sql thing
+	pe.entry_point == 0x6D540 or //8.60
+	pe.entry_point == 0x6EDAF or //8.60
+	pe.entry_point == 0x6DF65 or //9.62
+	pe.entry_point == 0x6F1FE //9.62
 )
 
 }
@@ -11345,7 +11363,7 @@ strings:
 
 
 condition:
-		$a0 at pe.entry_point and $a1
+		$a0 at pe.entry_point and ($a1 or aPlibSig)
 }
 
 rule PEBundlev02v30x
@@ -11358,7 +11376,7 @@ strings:
 		//jcalg1
 		$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
 condition:
-		$a0 at pe.entry_point and $a1
+		$a0 at pe.entry_point and ($a1 or aPlibSig)
 }
 
 rule PEBundlev02v20x
@@ -18820,6 +18838,42 @@ strings:
 
 condition:
 		$a0
+}
+
+rule Themida_HiddenPEScanner : Oreans Technologies
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+	strings:
+		$a0 = { 55 8B EC E9 D1 00 00 00 B8 ?? ?? ?? ?? C1 E8 10 05 13 09 00 00 25 FF 1F 00 00 8B C8 B9 00 00 01 00 B8 ?? ?? ?? ?? 81 E1 00 06 00 00 B9 00 08 00 00 EB 42 81 F9 00 02 00 00 76 00 51 6A 00 E8 }
+	condition:
+		$a0
+}
+
+rule Themida_1xx : Oreans Technologies
+{
+	meta:
+		author="_pusher_"
+		date = "2016-06"
+	strings:
+		//fixed
+		$a0 = { B8 00 00 00 00 60 0B C0 }
+		//not fixed
+		$a1 = { 80 3B CC 0F 85 5F 00 00 00 }
+		//fixed
+		$a2 = { 80 38 E9 75 13 }
+		//fixed .. older versions
+		$a5 = { 80 38 E9 75 03 }
+		
+		//fixed - Themida v1.8.2.0 - v1.9.5.0 detected !
+		$a3 = { 8E C7 63 31 98 4C 26 93 C9 E4 F2 78 BC 5E 2F 17 }
+		//fixed - Themida v1.0.0.0 - v1.8.1.0 detected !
+		$a4 = { 60 8B 74 24 24 8B 7C 24 28 FC B2 80 8A 06 46 88 07 47 BB 02 00 00 00 02 D2 75 05 8A 16 46 12 D2 73 EA 02 D2 75 }
+	condition:
+		($a0 in (pe.entry_point..pe.entry_point+0x50)
+		and ($a1 or $a2 or $a5)
+		and ($a3 or $a4))
 }
 
 rule Themida_2xx : Oreans Technologies
