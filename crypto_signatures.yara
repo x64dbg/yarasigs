@@ -1,3 +1,17 @@
+rule Advapi_Hash_API {
+	meta:
+		author = "_pusher_"
+		description = "Looks for advapi API functions"
+		date = "2016-07"
+	strings:
+		$advapi32 = "advapi32.dll" wide ascii nocase
+		$CryptCreateHash = "CryptCreateHash" wide ascii
+		$CryptHashData = "CryptHashData" wide ascii
+		$CryptAcquireContext = "CryptAcquireContext" wide ascii
+	condition:
+		$advapi32 and ($CryptCreateHash and $CryptHashData and $CryptAcquireContext)
+}
+
 rule CRC32_poly_Constants {
 	meta:
 		author = "_pusher_"
@@ -122,6 +136,21 @@ rule MD5_Constants {
 		$c9 = { 78A46AD7 }
 	condition:
 		5 of them
+}
+
+rule MD5_API {
+	meta:
+		author = "_pusher_"
+		description = "Looks for MD5 API"
+		date = "2016-07"
+	strings:
+		$advapi32 = "advapi32.dll" wide ascii nocase
+		$cryptdll = "cryptdll.dll" wide ascii nocase
+		$MD5Init = "MD5Init" wide ascii
+		$MD5Update = "MD5Update" wide ascii
+		$MD5Final = "MD5Final" wide ascii
+	condition:
+		($advapi32 or $cryptdll) and ($MD5Init and $MD5Update and $MD5Final)
 }
 
 rule RC6_Constants {
