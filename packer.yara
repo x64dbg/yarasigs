@@ -945,7 +945,7 @@ condition:
 	
 	
 
-rule aPlibSig : Jorgen Ibsen
+rule aPlib : Jorgen Ibsen
 {
 		meta:
 		author="_pusher_"
@@ -955,7 +955,11 @@ rule aPlibSig : Jorgen Ibsen
 		$a1 = { 60 8B 74 24 24 8B 7C 24 28 FC 33 DB 33 D2 A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 }
 		$a3 = { 60 8B 74 24 24 8B 7C 24 28 FC B2 80 33 DB A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 }
 		$a4 = { 61 94 55 B6 80 A4 FF 13 73 F9 33 C9 FF 13 73 16 33 C0 FF 13 73 1F B6 80 41 B0 10 FF 13 12 C0 73 FA 75 3A AA EB E0 FF 53 08 02 F6 83 D9 01 75 0E FF 53 04 EB 24 AC D1 E8 74 2D 13 C9 EB 18 91 48 C1 E0 08 AC FF 53 04 3B 43 F8 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 8B C5 }
-		$a5 = { B2 80 31 DB A4 B3 02 E8 6D 00 00 00 73 F6 31 C9 E8 64 00 00 00 73 1C 31 C0 E8 5B 00 00 00 73 23 B3 02 41 B0 10 E8 4F 00 00 00 10 C0 73 F7 75 3F AA EB D4 E8 4D 00 00 00 29 D9 75 10 E8 42 00 00 00 EB 28 AC D1 E8 74 ?? 11 C9 EB 1C 91 48 C1 E0 08 AC E8 2C 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 }
+		$a5 = { B2 80 A4 B6 80 FF 13 73 F9 33 C9 FF 13 73 16 33 C0 FF 13 73 1F B6 80 41 B0 10 FF 13 12 C0 73 FA 75 3C AA EB E0 FF 53 08 02 F6 83 D9 01 75 0E FF 53 04 EB 26 AC D1 E8 74 2F 13 C9 EB 1A 91 48 C1 E0 08 AC FF 53 04 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 }
+		$a6 = { B2 80 31 DB A4 B3 02 E8 6D 00 00 00 73 F6 31 C9 E8 64 00 00 00 73 1C 31 C0 E8 5B 00 00 00 73 23 B3 02 41 B0 10 E8 4F 00 00 00 10 C0 73 F7 75 3F AA EB D4 E8 4D 00 00 00 29 D9 75 10 E8 42 00 00 00 EB 28 AC D1 E8 74 ?? 11 C9 EB 1C 91 48 C1 E0 08 AC E8 2C 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 }
+		$a7 = { 33 C9 FF D3 73 16 33 C0 FF D3 73 23 B6 80 41 B0 10 FF D3 12 C0 73 FA 75 42 AA EB E0 E8 46 00 00 00 02 F6 83 D9 01 75 10 E8 38 00 00 00 EB 28 AC D1 E8 74 48 13 C9 EB 1C 91 48 C1 E0 08 AC E8 22 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
+		$a8 = { 33 C9 FF 14 24 73 18 33 C0 FF 14 24 73 21 B3 02 41 B0 10 FF 14 24 12 C0 73 F9 75 3F AA EB DC E8 43 00 00 00 2B CB 75 10 E8 38 00 00 00 EB 28 AC D1 E8 74 41 13 C9 EB 1C 91 48 C1 E0 08 AC E8 22 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
+		$a9 = { 33 C0 FF 13 73 1F B6 80 41 B0 10 FF 13 12 C0 73 FA 75 3A AA EB E0 FF 53 08 02 F6 83 D9 01 75 0E FF 53 04 EB 24 AC D1 E8 74 2D 13 C9 EB 18 91 48 C1 E0 08 AC FF 53 04 3B 43 F8 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
 	condition:
 		any of them
 }
@@ -3925,8 +3929,19 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule DLLPackager : ReWolf
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:
+		//OEP Jump place
+		$c0 = { 85 C0 75 6A 8B 45 E8 8B 4D F0 03 48 10 89 4D D4 8B 45 D4 83 38 00 74 56 8B 45 D4 8B 4D F4 8B 00 3B 01 75 0D 8B 45 D4 8B 4D F4 8B 49 10 89 08 EB 32 8B 45 D4 8B 4D F4 8B 00 3B 41 04 75 0D 8B 45 D4 8B 4D F4 8B 49 0C 89 08 EB 18 8B 45 D4 8B 4D F4 8B 00 3B 41 18 75 0B 8B 45 D4 8B 4D F4 8B 49 14 89 08 8B 45 D4 83 C0 04 89 45 D4 EB A2 8B 45 E8 83 C0 14 89 45 E8 E9 ?? ?? ?? ?? 8B 45 F4 83 C0 2C FF 20 5E C9 C3 }
+	condition:
+		$c0
+}
+
 
 rule DotFixNiceProtect21GPcHSoft
 {
@@ -4765,9 +4780,28 @@ condition:
 		$a0 at pe.entry_point
 }
 	
-	
+rule EXECryptor : SoftComplete
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+		description="EXECryptor"
+	strings:
+		
+		$c0 = "kern" nocase
+		$c1 = "GetM" nocase
+		$c2 = "Load" nocase
+		$c3 = "Exit" nocase
+		
+	condition:
+		(pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+0x8a < filesize)
+		and $c0 at (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+0x3c)
+		and $c1 at (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+0x4e)
+		and $c2 at (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+0x62) 
+		and $c3 at (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+0x86)
+}
 
-rule execryptor : Protector
+rule execryptor_ : Protector
 {
 	meta:
 		author="Kevin Falcoz"
@@ -6339,14 +6373,16 @@ rule FSGCrypt : EMBRACE
 {
 	meta:
 		author="_pusher_"
-		date = "2016-06"
+		date = "2016-07"
 	strings:
 		//if this is modified its not really FSG is it ?
 		$a0 = { 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C 00 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
+		$a2 = { 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C 00 00 00 00 00 00 }
 		$a1 = { B8 ?? ?? ?? ?? B9 ?? ?? ?? ?? 80 34 08 ?? B8 46 D2 40 00 B9 ?? ?? ?? ?? 80 34 08 ?? E2 FA }
+		$a3 = { B8 ?? ?? ?? ?? B9 ?? ?? ?? ?? 80 34 08 ?? E2 FA }
 	condition:
 					//Time_Date_Stamp
-		($a0 at 0x154) and (pe.timestamp == 0x52424D45) and ($a1 at pe.entry_point)
+		($a0 at 0x154 or $a2 at 0x1F2 ) and (pe.timestamp == 0x52424D45) and ($a1 at pe.entry_point or ($a3 in (pe.entry_point..pe.entry_point+0x50)) )
 }
 
 
@@ -7577,7 +7613,7 @@ rule IsArmadillo
 (
 
 
-
+	pe.entry_point == 0x97D8 or //unknown
 	pe.entry_point == 0x894E or //1.84
 	pe.entry_point == 0x9E5E or //1.90
 	pe.entry_point == 0xA1EF or //1.91c
@@ -7607,6 +7643,11 @@ rule IsArmadillo
 	pe.entry_point == 0x31000 or //7.0.021
 	pe.entry_point == 0x6D540 or //8.60
 	pe.entry_point == 0x6EDAF or //8.60
+	pe.entry_point == 0x8312F or //8.60
+	pe.entry_point == 0x8812F or //8.60
+	pe.entry_point == 0x8912F or //8.60
+	pe.entry_point == 0x8A12F or //8.60
+	pe.entry_point == 0x8B12F or //8.60
 	pe.entry_point == 0x6DF65 or //9.62
 	pe.entry_point == 0x6F1FE //9.62
 )
@@ -7627,15 +7668,17 @@ condition:
 		$a0 at pe.entry_point
 }
 
-rule JCAlg1Sig
+rule JCAlg1 : Jeremy Collake
 {
 		meta:
 		author="_pusher_"
-		date = "2015-11"
+		date = "2016-07"
 	strings: 
-		$a0 = { 55 8B EC 53 57 56 FF 75 0C FF 75 08 E8 07 00 00 00 5E 5F 5B C9 C2 0C 00 55 8B EC 83 C4 F4 FC 53 57 56 8B 75 08 8B 7D 0C }
+		//needs checked more
+		$a0 = { BA 00 00 00 80 43 33 C0 E8 6A 01 00 00 73 0E 8B 4D F8 E8 78 01 00 00 02 45 F7 AA EB E9 E8 55 01 00 00 0F 82 97 00 00 00 E8 4A 01 00 00 73 5B B9 04 00 00 00 E8 56 01 00 00 48 74 DE 0F 89 C7 00 00 00 E8 30 01 00 00 73 1B 55 BD 00 01 00 00 E8 30 01 00 00 88 07 47 4D 75 F5 E8 18 01 00 00 72 E9 5D EB A2 B9 01 00 00 00 E8 21 01 00 00 83 C0 07 89 45 F8 C6 45 F7 00 83 F8 08 74 89 E8 02 01 00 00 88 45 F7 E9 7C FF FF FF B9 07 00 00 00 E8 FB 00 00 00 50 B9 02 00 00 00 E8 F0 00 00 00 8B C8 41 41 58 0B C0 74 04 8B D8 EB 5E 83 F9 02 74 66 41 E8 D8 00 00 00 89 45 FC E9 47 FF FF FF E8 D7 00 00 00 49 E2 09 8B C3 E8 CD 00 00 00 EB 3A 49 8B C1 55 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 }
+		$a1 = { BA 00 00 00 80 43 33 C0 E8 5A 01 00 00 73 0E 8B 4D F8 E8 68 01 00 00 02 45 F7 AA EB E9 E8 45 01 00 00 0F 82 91 00 00 00 E8 3A 01 00 00 73 55 B9 04 00 00 00 E8 46 01 00 00 85 C0 0F 85 C2 00 00 00 E8 21 01 00 00 73 1B 55 BD 00 01 00 00 E8 21 01 00 00 88 07 47 4D 75 F5 E8 09 01 00 00 72 E9 5D EB A3 B9 03 00 00 00 E8 12 01 00 00 40 89 45 F8 C6 45 F7 00 83 F8 08 74 8C E8 F5 00 00 00 88 45 F7 EB 82 B9 07 00 00 00 E8 F1 00 00 00 50 B9 02 00 00 00 E8 E6 00 00 00 8B C8 41 41 58 0B C0 74 04 8B D8 EB 5E 83 F9 02 74 66 41 E8 CE 00 00 00 89 45 FC E9 4D FF FF FF E8 CD 00 00 00 49 E2 09 8B C3 E8 C3 00 00 00 EB 3A 49 8B C1 55 8B 4D FC 8B E8 33 C0 D3 E5 E8 A3 00 00 00 0B C5 5D 8B D8 E8 A5 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 }
 	condition:
-		($a0)
+		$a0 or $a1
 }
 
 
@@ -8070,16 +8113,18 @@ condition:
 	
 	
 
-rule LzmaSig
+rule LZMA
 {
 		meta:
 		author="_pusher_"
-		date = "2015-11"
+		date = "2016-07"
 	strings: 
 		$a0 = { E9 B2 08 00 00 55 8B EC 83 EC 3C 8B 45 08 8B 48 0C 53 56 33 F6 46 89 4D EC 8B 48 08 8B DE D3 E3 8B 48 04 8B D6 D3 E2 8B }
 		$a1 = { E9 F7 07 00 00 55 8B EC 83 EC 34 8B 45 08 8B 48 08 83 65 F0 00 83 65 F8 00 33 D2 42 53 56 8B 70 0C 57 8B DA D3 E3 8B 48 }
+		$a2 = { 55 8B EC 83 EC 30 33 C0 40 8B 7D 10 89 45 EC 89 45 E4 89 45 E8 89 45 D8 B8 00 04 00 00 33 D2 B9 36 07 03 00 F3 AB 8B 45 0C 6A 05 89 45 F8 89 55 F0 88 55 FF 89 55 F4 89 55 0C 83 C8 FF 59 8B 75 F8 8B 55 0C 0F B6 36 C1 E2 08 0B D6 FF 45 F8 49 89 55 0C 75 E9 8B 75 F0 8B 4D F4 8B 55 10 83 E6 03 C1 E1 04 03 CE 3D 00 00 00 01 8D 3C 8A 73 17 8B 55 F8 8B 4D 0C 0F B6 12 C1 E1 08 0B CA C1 E0 08 FF 45 F8 89 4D 0C 8B 0F 8B D8 C1 EB 0B 0F AF D9 39 5D 0C 0F 83 6A 01 00 00 BE 00 08 00 00 2B F1 C1 EE 05 03 F1 0F B6 4D FF 69 C9 00 0C 00 00 33 D2 89 37 8B 75 10 42 83 7D F4 07 8D 8C 0E D8 1C 00 00 8B C3 89 4D E0 0F 8C 9F 00 00 00 8B 4D F0 2B 4D EC 8B 75 08 0F B6 0C 0E 89 4D DC D1 65 DC 8B 75 DC 8B 7D E0 81 E6 00 01 00 00 3D 00 00 00 01 8D 0C 32 8D 8C 8F 00 04 00 00 89 4D D4 73 17 8B 5D F8 8B 7D 0C 0F B6 1B C1 E7 08 }
+		$a3 = { 55 57 56 53 83 EC 7C 8B 94 24 90 00 00 00 C7 44 24 74 00 00 00 00 C6 44 24 73 00 8B AC 24 9C 00 00 00 8D 42 04 89 44 24 78 B8 01 00 00 00 0F B6 4A 02 89 C3 D3 E3 89 D9 49 89 4C 24 6C 0F B6 4A 01 D3 E0 48 89 44 24 68 8B 84 24 A8 00 00 00 0F B6 32 C7 45 00 00 00 00 00 C7 44 24 60 00 00 00 00 C7 00 00 00 00 00 B8 00 03 00 00 89 74 24 64 C7 44 24 5C 01 00 00 00 C7 44 24 58 01 00 00 00 C7 44 24 54 01 00 00 00 C7 44 24 50 01 00 00 00 0F B6 4A 01 01 F1 D3 E0 8D 88 36 07 00 00 39 4C 24 74 73 0E 8B 44 24 78 66 C7 00 00 04 83 C0 02 E2 F6 }
 	condition:
-		($a0 or $a1)
+		$a0 or $a1 or $a2 or $a3
 }
 
 
@@ -9687,7 +9732,7 @@ condition:
 	
 	
 
-rule Nrv2eSig
+rule Nrv2e
 {
 		meta:
 		author="_pusher_"
@@ -9695,7 +9740,18 @@ rule Nrv2eSig
 	strings: 
 		$a0 = { 55 8B EC 60 8B 75 08 8B 7D 0C 83 CD FF 31 C9 FC F9 E8 79 00 00 00 EB 06 A4 E8 6D 00 00 00 72 F8 31 C0 40 E8 63 00 00 00 }
 	condition:
-		($a0)
+		$a0
+}
+
+rule Nrv2x
+{
+		meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings: 
+		$a0 = { 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 31 C9 83 E8 03 72 0D C1 E0 08 8A 06 46 83 F0 FF 74 74 89 C5 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 75 20 41 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 83 C1 02 81 FD 00 F3 FF FF 83 D1 01 8D 14 2F 83 FD FC 76 0F 8A 02 42 88 07 47 49 75 F7 E9 63 FF FF FF 90 8B 02 83 C2 04 89 07 83 C7 04 83 E9 04 77 F1 01 CF E9 4C FF FF FF 5E 89 F7 B9 3D 01 00 00 8A 07 47 2C E8 3C 01 77 F7 80 3F 05 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 88 D8 E2 D9 }
+	condition:
+		$a0
 }
 
 
@@ -11359,11 +11415,11 @@ rule PEBundlev02v40x
 strings:
 		$a0 = { 9C 60 E8 02 ?? ?? ?? 33 C0 8B C4 83 C0 04 93 8B E3 8B 5B FC 81 EB ?? ?? ?? ?? 87 DD 83 BD }
 		//jcalg1
-		$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
+		//$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
 
 
 condition:
-		$a0 at pe.entry_point and ($a1 or aPlibSig)
+		$a0 at pe.entry_point and (JCAlg1 or aPlib)
 }
 
 rule PEBundlev02v30x
@@ -11374,9 +11430,9 @@ rule PEBundlev02v30x
 strings:
 		$a0 = { 9C 60 E8 02 ?? ?? ?? 33 C0 8B C4 83 C0 04 93 8B E3 8B 5B FC 81 EB ?? ?? ?? ?? 87 DD }
 		//jcalg1
-		$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
+		//$a1 = { 8B 4D FC 8B E8 33 C0 D3 E5 E8 ?? 00 00 00 0B C5 5D 8B D8 E8 ?? 00 00 00 3D 00 00 01 00 73 14 3D FF 37 00 00 73 0E 3D 7F 02 00 00 73 08 83 F8 7F 77 04 41 41 41 41 56 8B F7 2B F0 F3 A4 5E E9 ?? FE FF FF }
 condition:
-		$a0 at pe.entry_point and ($a1 or aPlibSig)
+		$a0 at pe.entry_point and (JCAlg1 or aPlib)
 }
 
 rule PEBundlev02v20x
@@ -16173,19 +16229,41 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
-rule RLPack121BasicEditionaPLibAp0x
+
+rule RLPack1201BasicEditionLZMA : Ap0x
 {
 	meta:
 		author="_pusher_"
-		date = "2015-11"
+		date = "2016-07"
 	strings:
-		$a0 = { 60 E8 00 00 00 00 83 C4 04 8B 6C 24 FC E8 5C 02 00 00 E8 C0 2D 00 00 83 7C 24 28 01 75 0C 8B 44 24 24 89 85 F5 4C 00 00 EB 0C 8B 85 F1 4C 00 00 89 85 F5 4C 00 00 E8 7D 09 00 00 EB 03 2E 00 00 EB 03 2C 00 00 8D B5 }
+		$a0 = { 61 83 C7 08 83 3C 37 00 75 DA 83 BD ?? ?? 00 00 00 74 0E 83 BD ?? ?? 00 00 00 74 05 E8 ?? ?? 00 00 8D 74 37 04 E8 ?? ?? 00 00 8B 85 ?? ?? 00 00 0B C0 74 0B 03 85 ?? ?? 00 00 E8 ?? ?? 00 00 83 BD ?? ?? 00 00 01 75 13 89 B5 ?? ?? 00 00 EB 03 83 C6 04 83 7E FC FF 75 F7 EB 03 83 C6 08 8B 06 89 85 ?? ?? 00 00 83 C6 04 E8 ?? ?? 00 00 83 C6 04 53 6A 40 68 00 10 00 00 68 D3 07 00 00 6A 00 FF 95 ?? ?? 00 00 89 85 ?? ?? 00 00 5B 60 FF B5 ?? ?? 00 00 56 FF B5 ?? ?? 00 00 FF D3 61 }
+	condition:
+		$a0 and LZMA
+}
+
+
+rule RLPack121BasicEditionaPLib : Ap0x
+{
+	meta:
+		author="_pusher_"
+		date = "2015-07"
+	strings:
+		$a0 = { 60 6A 40 68 00 10 00 00 68 00 00 08 00 6A 00 FF 95 ?? ?? 00 00 8B F8 57 8D 9D ?? ?? 00 00 8D 85 ?? ?? 00 00 57 50 FF D3 83 C4 08 03 C7 EB 01 48 80 38 00 74 FA 2B C7 40 8B C8 8B F7 8D BD ?? ?? 00 00 F3 A4 5F 68 00 40 00 00 68 00 00 08 00 57 FF 95 ?? ?? 00 00 61 C3 }
 
 	condition:
-		$a0 at pe.entry_point
+		$a0 and aPlib
+}
+
+rule RLPack121BasicEditionLZMA : Ap0x
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings:
+		$a0 = { 60 E8 00 00 00 00 8B 2C 24 83 C4 04 83 7C 24 28 01 75 0C 8B 44 24 24 89 85 E0 0C 00 00 EB 0C 8B 85 DC 0C 00 00 89 85 E0 0C 00 00 E8 ?? ?? ?? ?? 8D B5 08 0D 00 00 8D 9D C6 04 00 00 33 FF 6A 40 68 00 10 00 00 68 00 20 0C 00 6A 00 FF 95 71 0C 00 00 89 85 D8 0C 00 00 E8 ?? ?? ?? ?? EB 20 60 8B 85 E0 0C 00 00 FF B5 D8 0C 00 00 FF 34 37 01 04 24 FF 74 37 04 01 04 24 FF D3 61 }
+	condition:
+		$a0 at pe.entry_point and LZMA
 }
 	
 	
