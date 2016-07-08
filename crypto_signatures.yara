@@ -1,3 +1,51 @@
+rule Big_Numbers0
+{
+	meta:
+		author = "_pusher_"
+		description = "Looks for big numbers 20:sized"
+		date = "2016-07"
+	strings:
+		$c0 = /[0-9a-fA-F]{20}/ fullword ascii
+	condition:
+		$c0
+}
+
+rule Big_Numbers1
+{
+	meta:
+		author = "_pusher_"
+		description = "Looks for big numbers 32:sized"
+		date = "2016-07"
+	strings:
+		$c0 = /[0-9a-fA-F]{32}/ fullword wide ascii
+	condition:
+		$c0
+}
+
+rule Big_Numbers2
+{
+	meta:
+		author = "_pusher_"
+		description = "Looks for big numbers 48:sized"
+		date = "2016-07"
+	strings:
+		$c0 = /[0-9a-fA-F]{48}/ fullword wide ascii
+	condition:
+		$c0
+}
+
+rule Big_Numbers3
+{
+	meta:
+		author = "_pusher_"
+		description = "Looks for big numbers 64:sized"
+		date = "2016-07"
+	strings:
+        	$c0 = /[0-9a-fA-F]{64}/ fullword wide ascii
+	condition:
+		$c0
+}
+
 rule Advapi_Hash_API {
 	meta:
 		author = "_pusher_"
@@ -73,6 +121,27 @@ rule CRC16_table {
 		$c0
 }
 
+rule FlyUtilsCnDES_ECB_Encrypt {
+	meta:
+		author = "_pusher_"
+		description = "Look for FlyUtils.CnDES Encrypt ECB function"
+		date = "2016-07"
+	strings:
+		$c0 = { 55 8B EC 83 C4 E8 53 56 57 33 DB 89 5D E8 89 5D EC 8B D9 89 55 F8 89 45 FC 8B 7D 08 8B 75 20 8B 45 FC E8 ?? ?? ?? ?? 8B 45 F8 E8 ?? ?? ?? ?? 33 C0 55 68 ?? ?? ?? ?? 64 FF 30 64 89 20 80 7D 18 00 74 1A 0F B6 55 18 8D 4D EC 8B 45 F8 E8 ?? ?? ?? ?? 8B 55 EC 8D 45 F8 E8 ?? ?? ?? ?? 80 7D 1C 00 74 1A 0F B6 55 1C 8D 4D E8 8B 45 FC E8 ?? ?? ?? ?? 8B 55 E8 8D 45 FC E8 ?? ?? ?? ?? 85 DB 75 07 E8 ?? ?? ?? ?? 8B D8 85 F6 75 07 E8 ?? ?? ?? ?? 8B F0 53 6A 00 8B 4D FC B2 01 A1 ?? ?? ?? ?? E8 ?? ?? ?? ?? 89 45 F4 33 D2 55 68 ?? ?? ?? ?? 64 FF 32 64 89 22 6A 00 6A 00 8B 45 F4 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 50 6A 00 33 C9 B2 01 A1 ?? ?? ?? ?? E8 ?? ?? ?? ?? 89 45 F0 33 D2 55 68 ?? ?? ?? ?? 64 FF 32 64 89 22 6A 00 6A 00 56 }
+	condition:
+		$c0
+}
+
+rule FlyUtilsCnDES_ECB_Decrypt {
+	meta:
+		author = "_pusher_"
+		description = "Look for FlyUtils.CnDES Decrypt ECB function"
+		date = "2016-07"
+	strings:
+		$c0 = { 55 8B EC 83 C4 E8 53 56 57 33 DB 89 5D E8 89 5D EC 8B F9 89 55 F8 89 45 FC 8B 5D 18 8B 75 20 8B 45 FC E8 ?? ?? ?? ?? 8B 45 F8 E8 ?? ?? ?? ?? 33 C0 55 68 ?? ?? ?? ?? 64 FF 30 64 89 20 84 DB 74 18 8B D3 8D 4D EC 8B 45 F8 E8 ?? ?? ?? ?? 8B 55 EC 8D 45 F8 E8 ?? ?? ?? ?? 85 FF 75 07 E8 ?? ?? ?? ?? 8B F8 85 F6 75 07 E8 ?? ?? ?? ?? 8B F0 8B 4D FC B2 01 A1 ?? ?? ?? ?? E8 ?? ?? ?? ?? 89 45 F4 33 D2 55 68 ?? ?? ?? ?? 64 FF 32 64 89 22 57 6A 00 33 C9 B2 01 A1 ?? ?? ?? ?? E8 ?? ?? ?? ?? 89 45 F0 33 D2 55 68 ?? ?? ?? ?? 64 FF 32 64 89 22 6A 00 6A 00 56 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 50 FF 75 14 FF 75 10 8B 45 0C 50 8B 4D F8 8B 55 F0 8B 45 F4 E8 ?? ?? ?? ?? 6A 00 6A 00 8B 45 F0 E8 ?? ?? ?? ?? 33 C0 55 68 ?? ?? ?? ?? 64 FF 30 64 89 20 8B 55 08 8B 45 F0 E8 ?? ?? ?? ?? 33 C0 5A 59 59 64 89 10 EB 12 E9 ?? ?? ?? ?? 8B 45 08 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 33 C0 5A 59 59 64 89 10 68 ?? ?? ?? ?? 8B 45 F0 33 D2 89 55 F0 E8 ?? ?? ?? ?? C3 }
+	condition:
+		$c0
+}
 
 rule Elf_Hash {
 	meta:
@@ -764,10 +833,10 @@ rule CryptoPP_Integer_constructor
 		any of them
 }
 
-rule RIJNDAEL
+rule RijnDael_AES
 {	meta:
 		author = "_pusher_"
-		description = "RIJNDAEL"
+		description = "RijnDael AES"
 		date = "2016-06"
 	strings:
 		$c0 = { A5 63 63 C6 84 7C 7C F8 }
@@ -775,10 +844,10 @@ rule RIJNDAEL
 		$c0
 }
 
-rule RIJNDAEL_CHAR
+rule RijnDael_AES_CHAR
 {	meta:
 		author = "_pusher_"
-		description = "RIJNDAEL (check2) [char]"
+		description = "RijnDael AES (check2) [char]"
 		date = "2016-06"
 	strings:
 		$c0 = { 63 7C 77 7B F2 6B 6F C5 30 01 67 2B FE D7 AB 76 CA 82 C9 7D FA 59 47 F0 AD D4 A2 AF 9C A4 72 C0 }
@@ -786,10 +855,22 @@ rule RIJNDAEL_CHAR
 		$c0
 }
 
-rule RIJNDAEL_LONG
+rule RijnDael_AES_CHAR_inv
 {	meta:
 		author = "_pusher_"
-		description = "RIJNDAEL"
+		description = "RijnDael AES S-inv [char]"
+		//needs improvement
+		date = "2016-07"
+	strings:
+		$c0 = { 48 38 47 00 88 17 33 D2 8A 56 0D 8A 92 48 38 47 00 88 57 01 33 D2 8A 56 0A 8A 92 48 38 47 00 88 57 02 33 D2 8A 56 07 8A 92 48 38 47 00 88 57 03 33 D2 8A 56 04 8A 92 }
+	condition:
+		$c0
+}
+
+rule RijnDael_AES_LONG
+{	meta:
+		author = "_pusher_"
+		description = "RijnDael AES"
 		date = "2016-06"
 	strings:
 		$c0 = { 63 7C 77 7B F2 6B 6F C5 30 01 67 2B FE D7 AB 76 CA 82 C9 7D FA 59 47 F0 AD D4 A2 AF 9C A4 72 C0 }
@@ -991,6 +1072,21 @@ rule Delphi_FormShow {
 		any of them
 }
 
+rule Delphi_CompareCall {
+	meta:
+		author = "_pusher_"
+		description = "Look for Compare string function"
+		date = "2016-07"
+	strings:
+		$c0 = { 53 56 57 89 C6 89 D7 39 D0 0F 84 8F 00 00 00 85 F6 74 68 85 FF 74 6B 8B 46 FC 8B 57 FC 29 D0 77 02 01 C2 52 C1 EA 02 74 26 8B 0E 8B 1F 39 D9 75 58 4A 74 15 8B 4E 04 8B 5F 04 39 D9 75 4B 83 C6 08 83 C7 08 4A 75 E2 EB 06 83 C6 04 83 C7 04 5A 83 E2 03 74 22 8B 0E 8B 1F 38 D9 75 41 4A 74 17 38 FD 75 3A 4A 74 10 81 E3 00 00 FF 00 81 E1 00 00 FF 00 39 D9 75 27 01 C0 EB 23 8B 57 FC 29 D0 EB 1C 8B 46 FC 29 D0 EB 15 5A 38 D9 75 10 38 FD 75 0C C1 E9 10 C1 EB 10 38 D9 75 02 38 FD 5F 5E 5B C3 }
+		//newer delphi
+		$c1 = { 39 D0 74 30 85 D0 74 22 8B 48 FC 3B 4A FC 75 24 01 C9 01 C8 01 CA F7 D9 53 8B 1C 01 3B 1C 11 75 07 83 C1 04 78 F3 31 C0 5B C3}
+		//x64
+		$c2 = { 41 56 41 55 57 56 53 48 83 EC 20 48 89 D3 48 3B CB 75 05 48 33 C0 EB 74 48 85 C9 75 07 8B 43 FC F7 D8 EB 68 48 85 DB 75 05 8B 41 FC EB 5E 8B 79 FC 44 8B 6B FC 89 FE 41 3B F5 7E 03 44 89 EE E8 ?? ?? ?? ?? 49 89 C6 48 89 D9 E8 ?? ?? ?? ?? 48 89 C1 85 F6 7E 30 41 0F B7 06 0F B7 11 2B C2 85 C0 75 29 83 FE 01 74 1E 41 0F B7 46 02 0F B7 51 02 2B C2 85 C0 75 15 49 83 C6 04 48 83 C1 04 83 EE 02 85 F6 7F D0 90 8B C7 41 2B C5 48 83 C4 20 5B 5E 5F 41 5D 41 5E C3 }
+ 	condition:
+		any of them
+}
+
 rule Delphi_Copy {
 	meta:
 		author = "_pusher_"
@@ -1049,6 +1145,16 @@ rule Delphi_DecodeDate {
 }
 
 
+rule Unknown_Random {
+	meta:
+		author = "_pusher_"
+		description = "Look for Random function"
+		date = "2016-07"
+	strings:
+		$c0 = { 55 8B EC 52 8B 45 08 69 15 ?? ?? ?? ?? 05 84 08 08 42 89 15 ?? ?? ?? ?? F7 E2 8B C2 5A C9 C2 04 00 }
+	condition:
+		$c0
+}
 
 rule VC6_Random {
 	meta:
@@ -1073,6 +1179,27 @@ rule VC8_Random {
 		$c0
 }
 
+rule DCP_RIJNDAEL_Init {
+	meta:
+		author = "_pusher_"
+		description = "Look for DCP RijnDael Init"
+		date = "2016-07"
+	strings:
+		$c0 = { 55 8B EC 51 53 56 57 89 4D FC 8B FA 8B D8 8B 75 08 56 8B D7 8B 4D FC 8B C3 E8 ?? ?? ?? ?? 8B D7 8B 4D FC 8B C3 8B 38 FF 57 ?? 85 F6 75 25 8D 43 38 33 C9 BA 10 00 00 00 E8 ?? ?? ?? ?? 8D 4B 38 8D 53 38 8B C3 8B 30 FF 56 ?? 8B C3 8B 10 FF 52 ?? EB 16 8D 53 38 8B C6 B9 10 00 00 00 E8 ?? ?? ?? ?? 8B C3 8B 10 FF 52 ?? 5F 5E 5B 59 5D C2 04 00 }
+	condition:
+		$c0
+}
+
+rule DCP_RIJNDAEL_EncryptECB {
+	meta:
+		author = "_pusher_"
+		description = "Look for DCP RijnDael EncryptECB"
+		date = "2016-07"
+	strings:
+		$c0 = { 53 56 57 55 83 C4 B4 89 0C 24 8D 74 24 08 8D 7C 24 28 80 78 30 00 75 16 B9 ?? ?? ?? ?? B2 01 A1 ?? ?? ?? ?? E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B 0A 89 0F 8B CA 83 C1 04 8B 09 8D 5F 04 89 0B 8B CA 83 C1 08 8B 09 8D 5F 08 89 0B 83 C2 0C 8B 12 8D 4F 0C 89 11 8B 50 58 83 EA 02 85 D2 0F 82 3B 01 00 00 42 89 54 24 04 33 D2 8B 0F 8B DA C1 E3 02 33 4C D8 5C 89 0E 8D 4F 04 8B 09 33 4C D8 60 8D 6E 04 89 4D 00 8D 4F 08 8B 09 33 4C D8 64 8D 6E 08 89 4D 00 8D 4F 0C 8B 09 33 4C D8 68 8D 5E 0C 89 0B 33 C9 8A 0E 8D 0C 8D }
+	condition:
+		$c0
+}
 
 rule DCP_DES_Init {
 	meta:
