@@ -65,7 +65,6 @@ rule IsPacked : PECheck
 		math.entropy(0, filesize) > 7.0
 }
 
-
 rule borland_cpp {
 	meta:
 		author = "_pusher_"
