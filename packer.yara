@@ -960,6 +960,7 @@ rule aPlib : Jorgen Ibsen
 		$a7 = { 33 C9 FF D3 73 16 33 C0 FF D3 73 23 B6 80 41 B0 10 FF D3 12 C0 73 FA 75 42 AA EB E0 E8 46 00 00 00 02 F6 83 D9 01 75 10 E8 38 00 00 00 EB 28 AC D1 E8 74 48 13 C9 EB 1C 91 48 C1 E0 08 AC E8 22 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
 		$a8 = { 33 C9 FF 14 24 73 18 33 C0 FF 14 24 73 21 B3 02 41 B0 10 FF 14 24 12 C0 73 F9 75 3F AA EB DC E8 43 00 00 00 2B CB 75 10 E8 38 00 00 00 EB 28 AC D1 E8 74 41 13 C9 EB 1C 91 48 C1 E0 08 AC E8 22 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
 		$a9 = { 33 C0 FF 13 73 1F B6 80 41 B0 10 FF 13 12 C0 73 FA 75 3A AA EB E0 FF 53 08 02 F6 83 D9 01 75 0E FF 53 04 EB 24 AC D1 E8 74 2D 13 C9 EB 18 91 48 C1 E0 08 AC FF 53 04 3B 43 F8 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
+		$a10 = { 60 8B 74 24 24 8B 7C 24 28 FC B2 80 33 DB A4 B3 02 E8 6D 00 00 00 73 F6 33 C9 E8 64 00 00 00 73 1C 33 C0 E8 5B 00 00 00 73 23 B3 02 41 B0 10 E8 4F 00 00 00 12 C0 73 F7 75 3F AA EB D4 E8 4D 00 00 00 2B CB 75 10 E8 42 00 00 00 EB 28 AC D1 E8 74 4D 13 C9 EB 1C 91 48 C1 E0 08 AC E8 2C 00 00 00 3D 00 7D 00 00 73 0A 80 FC 05 73 06 83 F8 7F 77 02 41 41 95 }
 	condition:
 		any of them
 }
@@ -7476,23 +7477,23 @@ strings:
 
 condition:
 		$a0 at pe.entry_point or $a1 at pe.entry_point
-}
-	
-	
-rule InstallShieldInstaller
+}	
+
+rule  InstallShieldInstaller
 {
 	meta:
 		author="_pusher_"
-		date="2016-06"
+		date = "2016-07"
 	strings:
-		//doest find all.. eg: 9.7.0.0 & 21.0.0.0
-		//unicode
-		$a0 = { 49 6E 73 74 61 6C 6C 53 68 69 65 6C 64 00 00 00 2E 74 65 78 74 00 00 00 2E 72 64 61 74 61 00 00 2E 64 65 62 75 67 00 00 5F 00 69 00 73 00 00 00 B8 E9 48 00 FF FF FF FF FF FF 00 00 53 00 65 00 72 00 76 00 69 00 63 00 65 00 50 00 61 00 63 00 6B 00 00 00 50 00 6C 00 61 00 74 00 66 00 6F 00 72 00 6D 00 49 00 64 00 00 00 00 00 42 00 75 00 69 00 6C 00 64 00 4E 00 6F 00 00 00 4D 00 69 00 6E 00 6F 00 72 00 56 00 65 00 72 00 4D 00 61 00 78 00 00 00 4D 00 69 00 6E 00 6F 00 72 00 56 00 65 00 72 00 00 00 00 00 4D 00 61 00 6A 00 6F 00 72 00 56 00 65 00 72 00 00 00 00 00 5F 00 4D 00 53 00 49 00 35 00 31 00 36 00 36 00 2E 00 5F 00 49 00 53 }
-		//normal
-		$a1 = { 49 6E 73 74 61 6C 6C 53 68 69 65 6C 64 00 00 00 2E 72 64 61 74 61 00 00 2E 64 65 62 75 67 00 00 D4 E9 43 00 FF FF FF FF FF FF 00 00 53 65 72 76 69 63 65 50 61 63 6B 00 50 6C 61 74 66 6F 72 6D 49 64 00 00 42 75 69 6C 64 4E 6F 00 4D 69 6E 6F 72 56 65 72 4D 61 78 00 4D 69 6E 6F 72 56 65 72 00 00 00 00 4D 61 6A 6F 72 56 65 72 00 00 00 00 5F 4D 53 49 35 31 36 36 2E 5F 49 53 }
-
+		$a0 = "InstallShield" wide ascii nocase
+		$a1 = "InstallShield.Setup" wide ascii nocase
 	condition:
-		any of them
+		//pe.overlay would be nice ;)
+		($a0 at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)) 
+		or
+		//look in overlay
+		//($c1 in (pe.sections[pe.number_of_sections-1].raw_data_offset..pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size))
+		$a1
 }
 
 rule InstallShield2000
@@ -8440,7 +8441,21 @@ strings:
 
 condition:
 		$a0 at pe.entry_point
-}	
+}
+
+rule SFX_CAB : Microsoft
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	//strings:
+		//$a0 = "CABINET" fullword wide ascii nocase
+		//$a1 = "MSCF" wide ascii nocase
+		//"C\x00A\x00B\x00I\x00N\x00E\x00T\x00" or
+	condition:
+		    for any i in (0..pe.number_of_resources - 1):
+ 		     ((pe.resources[i].name_string == "C\x00A\x00B\x00I\x00N\x00E\x00T\x00" or "CABINET") and uint32be(pe.resources[i].offset) == 0x4D534346)
+}
 
 rule Minke101byCodius
 {
@@ -9423,17 +9438,32 @@ rule DotNET_Reactor
 	meta:
 		author="_pusher_"
 		date="2016-06"
-	strings:		
-		$a0 = { 88 3C AC 15 71 FE DD E7 F7 0E 92 E2 BB 17 A2 CA 10 F3 0A 92 58 FB 7A F2 73 2F 2E 12 E1 FF A4 87 AD 9D 62 B1 8D E2 DD FB 99 68 FC 06 72 6E 1A 5D }
+	strings:	
+		//needs more work	
+		//$a0 = { 88 3C AC 15 71 FE DD E7 F7 0E 92 E2 BB 17 A2 CA 10 F3 0A 92 58 FB 7A F2 73 2F 2E 12 E1 FF A4 87 AD 9D 62 B1 8D E2 DD FB 99 68 FC 06 72 6E 1A 5D }
 		//v2
-		$a1 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 32 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 07 00 8C 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
+		//$a1 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 32 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? 00 ?? 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
 		//v4
-		$a2 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 34 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 07 00 8C 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
+		//$a2 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 34 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? 00 ?? 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
+		//needs improvements
+		$a3 = { 38 02 ?? ?? ?? 26 16 }
 	condition:
-		//$a0 in (pe.sections[1].raw_data_offset..pe.sections[2].raw_data_offset+pe.sections[2].raw_data_size)
-		//$a0 in ((pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)+50)
-		//need overlay since last section could be something else
-		any of them
+		pe.imports ("mscoree.dll","_CorExeMain") and 1 of ($a*)
+}
+
+
+rule DotNET_NetzPacker : MadeBits
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:		
+		$a0 = "NetzStarter" wide ascii nocase
+		$a1 = "netz\x00mscorlib" wide ascii nocase
+		$a2 = "NetzSuffix" wide ascii nocase
+		$a3 = "NetzResolveEventHandler" wide ascii nocase
+	condition:
+		pe.imports ("mscoree.dll","_CorExeMain") and 4 of ($a*)		
 }
 
 
@@ -9749,9 +9779,13 @@ rule Nrv2x
 		author="_pusher_"
 		date = "2016-07"
 	strings: 
-		$a0 = { 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 31 C9 83 E8 03 72 0D C1 E0 08 8A 06 46 83 F0 FF 74 74 89 C5 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 75 20 41 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 83 C1 02 81 FD 00 F3 FF FF 83 D1 01 8D 14 2F 83 FD FC 76 0F 8A 02 42 88 07 47 49 75 F7 E9 63 FF FF FF 90 8B 02 83 C2 04 89 07 83 C7 04 83 E9 04 77 F1 01 CF E9 4C FF FF FF 5E 89 F7 B9 3D 01 00 00 8A 07 47 2C E8 3C 01 77 F7 80 3F 05 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 88 D8 E2 D9 }
+		$a0 = { 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 31 C9 83 E8 03 72 0D C1 E0 08 8A 06 46 83 F0 FF 74 74 89 C5 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 75 20 41 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 83 C1 02 81 FD 00 F3 FF FF 83 D1 01 8D 14 2F 83 FD FC 76 0F 8A 02 42 88 07 47 49 75 F7 E9 63 FF FF FF 90 8B 02 83 C2 04 89 07 83 C7 04 83 E9 04 77 F1 01 CF E9 4C FF FF FF 5E 89 F7 B9 ?? ?? 00 00 8A 07 47 2C E8 3C 01 77 F7 80 3F ?? 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 }
+		//real old
+		$a1 = { 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 0B 75 19 8B 1E 83 EE FC 11 DB 72 10 48 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 EB D4 31 C9 83 E8 03 72 11 C1 E0 08 8A 06 46 83 F0 FF 74 78 D1 F8 89 C5 EB 0B 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 75 20 41 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 83 C1 02 81 FD 00 FB FF FF 83 D1 01 8D 14 2F 83 FD FC 76 0F 8A 02 42 88 07 47 49 75 F7 E9 4F FF FF FF 90 8B 02 83 C2 04 89 07 83 C7 04 83 E9 04 77 F1 01 CF E9 38 FF FF FF 5E 89 F7 B9 47 07 00 00 8A 07 47 2C E8 3C 01 77 F7 80 3F 05 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 }
+		$a2 = { 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 0B 75 28 8B 1E 83 EE FC 11 DB 72 1F 48 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 EB D4 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 EB 52 31 C9 83 E8 03 72 11 C1 E0 08 8A 06 46 83 F0 FF 74 75 D1 F8 89 C5 EB 0B 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 CC 41 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 BE 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 83 C1 02 81 FD 00 FB FF FF 83 D1 02 8D 14 2F 83 FD FC 76 0E 8A 02 42 88 07 47 49 75 F7 E9 42 FF FF FF 8B 02 83 C2 04 89 07 83 C7 04 83 E9 04 77 F1 01 CF E9 2C FF FF FF 5E 89 F7 B9 ?? ?? 00 00 8A 07 47 2C E8 3C 01 77 F7 80 3F ?? 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 88 D8 E2 D9 }		
+		$a3 = { 8A 06 46 88 07 47 01 DB 75 07 8B 1E 83 EE FC 11 DB 72 ED B8 01 00 00 00 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C0 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 31 C9 83 E8 03 72 0D C1 E0 08 8A 06 46 83 F0 FF 74 74 89 C5 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 75 20 41 01 DB 75 07 8B 1E 83 EE FC 11 DB 11 C9 01 DB 73 EF 75 09 8B 1E 83 EE FC 11 DB 73 E4 83 C1 02 81 FD 00 F3 FF FF 83 D1 01 8D 14 2F 83 FD FC 76 0F 8A 02 42 88 07 47 49 75 F7 E9 63 FF FF FF 90 8B 02 83 C2 04 89 07 83 C7 04 83 E9 04 77 F1 01 CF E9 4C FF FF FF 5E 8D BE 00 20 00 00 B9 7B 00 00 00 8A 07 47 2C E8 3C 01 77 F7 80 3F 00 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 88 D8 E2 D9 }
 	condition:
-		$a0
+		any of them
 }
 
 
@@ -16265,8 +16299,30 @@ rule RLPack121BasicEditionLZMA : Ap0x
 	condition:
 		$a0 at pe.entry_point and LZMA
 }
-	
-	
+
+rule RLPack121FullEditionLZMA : Ap0x
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings:
+		$a0 = { 60 6A 40 68 00 10 00 00 68 00 20 0C 00 6A 00 FF 95 29 0B 00 00 8B F0 6A 40 68 00 10 00 00 68 00 00 08 00 6A 00 FF 95 29 0B 00 00 8B F8 56 57 8D 9D 7E 03 00 00 8D 85 A2 0B 00 00 60 56 50 57 FF D3 89 44 24 1C 61 03 C7 EB 01 48 80 38 00 74 FA 2B C7 40 8B C8 8B F7 8D BD A2 0B 00 00 F3 A4 5F 68 00 40 00 00 68 00 00 08 00 57 FF 95 31 0B 00 00 5E 68 00 40 00 00 68 00 20 0C 00 56 FF 95 31 0B 00 00 61 C3 }
+	condition:
+		$a0 and LZMA
+}
+
+rule RLPack121FullEditionaPlib : Ap0x
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings:
+		$a0 = { 60 6A 40 68 00 10 00 00 68 00 20 0C 00 6A 00 FF 95 29 0B 00 00 8B F0 6A 40 68 00 10 00 00 68 00 00 08 00 6A 00 FF 95 29 0B 00 00 8B F8 56 57 8D 9D 7E 03 00 00 8D 85 A2 0B 00 00 60 56 50 57 FF D3 89 44 24 1C 61 03 C7 EB 01 48 80 38 00 74 FA 2B C7 40 8B C8 8B F7 8D BD A2 0B 00 00 F3 A4 5F 68 00 40 00 00 68 00 00 08 00 57 FF 95 31 0B 00 00 5E 68 00 40 00 00 68 00 20 0C 00 56 FF 95 31 0B 00 00 61 C3 }
+		$a1 = { 60 6A 40 68 00 10 00 00 68 00 00 08 00 6A 00 FF 95 FD 03 00 00 8B F8 57 8D 9D 17 03 00 00 8D 85 76 04 00 00 57 50 FF D3 83 C4 08 03 C7 EB 01 48 80 38 00 74 FA 2B C7 40 8B C8 8B F7 8D BD 76 04 00 00 F3 A4 5F 68 00 40 00 00 68 00 00 08 00 57 FF 95 05 04 00 00 61 C3 }
+	condition:
+		($a0 or $a1) and aPlib
+}
+
 
 rule RLPackAp0x
 {
@@ -19457,8 +19513,18 @@ strings:
 condition:
 		$a0
 }
-	
-	
+
+rule UnknownPacker : NameIt
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+strings:
+		$c0 = { 55 6A 00 FF 93 ?? ?? ?? ?? 89 83 ?? ?? ?? ?? 6A 40 68 00 10 00 00 FF B3 ?? ?? ?? ?? 6A 00 FF 93 ?? ?? ?? ?? 89 83 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? 03 83 ?? ?? ?? ?? 50 FF B3 ?? ?? ?? ?? 50 E8 ?? ?? ?? ?? 5F 8B 8B ?? ?? ?? ?? 33 C0 F3 AA 8D B3 ?? ?? ?? ?? 8B 93 ?? ?? ?? ?? AD 8B C8 AD 0B C0 74 19 87 D6 03 83 ?? ?? ?? ?? 8B F8 60 F3 A4 61 50 33 C0 F3 A6 40 58 87 F2 EB DF 68 00 40 00 00 6A 00 FF B3 ?? ?? ?? ?? 6A FF FF 93 ?? ?? ?? ?? 8B B3 ?? ?? ?? ?? 0B F6 74 63 03 B3 ?? ?? ?? ?? 8B 7E 10 03 BB ?? ?? ?? ?? 8B 6E 0C 0B ED 74 4D 03 AB ?? ?? ?? ?? 6A 00 6A 00 55 FF 93 ?? ?? ?? ?? 8B E8 56 8B 06 0B C0 75 03 8B 46 10 8B F0 03 B3 ?? ?? ?? ?? AD 0B C0 74 1D 79 07 25 FF FF FF 7F EB 09 03 83 ?? ?? ?? ?? 83 C0 02 50 55 FF 93 ?? ?? ?? ?? AB EB DE 5E 83 C6 14 EB A3 8B 83 ?? ?? ?? ?? 0B C0 74 0F 03 83 ?? ?? ?? ?? 8D 8B ?? ?? ?? ?? 51 FF D0 5D C3 }
+
+condition:
+		$c0
+}	
 
 rule UnknownbySMT
 {
@@ -22221,8 +22287,16 @@ rule winrar_sfx_pusher : WinRAR SFX
 		date = "2015-11"
 	strings:
 		$a0 = { 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 57 49 4E 52 41 52 2E 53 46 58 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 } 		
+		$a1 = "RarSFX" wide ascii nocase
+		$a2 = "GETPASSWORD1" wide ascii nocase
 	condition:
-		$a0
+		$a0 or
+		(
+		$a1 and $a2 and
+		uint32be( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) ) == 0x52617221
+		)
+		
+
 }	
 
 rule winrar_sfx : Packer
@@ -22997,7 +23071,21 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
+
+rule ZipMaster_ZipSFX
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings:
+		$a0 = "SFXInflate" wide ascii nocase
+		$a1 = "SFXStructs" wide ascii nocase
+		$a2 = "SysInit" wide ascii nocase
+		$a3 = "Windows" wide ascii nocase
+	condition:
+		all of them
+}
+
 rule ZipWorxSecureEXEv25ZipWORXTechnologiesLLC
 {
 	meta:
