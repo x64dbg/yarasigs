@@ -65,6 +65,18 @@ rule IsPacked : PECheck
 		math.entropy(0, filesize) > 7.0
 }
 
+rule HasOverlay : PECheck
+{
+	meta: 
+		description = "Overlay Check"
+	condition:
+     		// MZ signature at offset 0 and ...
+     		uint16(0) == 0x5A4D and
+    	 	// ... PE signature at offset stored in MZ header at 0x3C
+     		uint32(uint32(0x3C)) == 0x00004550 and
+		(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) < filesize
+}
+
 rule borland_cpp {
 	meta:
 		author = "_pusher_"
