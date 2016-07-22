@@ -243,8 +243,18 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule AdvancedInstaller : Caphyon
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings:
+		$a0 = "AI_SETUPEXEPATH" wide ascii nocase
+		$a1 = "Advanced Installer" wide ascii nocase
+	condition:		
+		$a0 and $a1
+}	
 
 rule AHpack01FEUERRADER
 {
@@ -722,8 +732,7 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
 
 rule AntiDote10BetaSISTeam
 {
@@ -734,9 +743,7 @@ strings:
 
 condition:
 		$a0 at pe.entry_point
-}
-	
-	
+}	
 
 rule AntiDote10Demo12SISTeam
 {
@@ -3546,21 +3553,6 @@ strings:
 condition:
 		$a0
 }
-	
-	
-
-rule D1S1Gv11betaD1N
-{
-	meta:
-		author="malware-lu"
-strings:
-		$a0 = { 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 00 00 01 00 0A 00 00 00 18 00 00 80 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 02 00 00 00 88 00 00 80 38 00 00 80 96 00 00 80 50 00 00 80 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 00 00 01 00 00 00 00 00 68 00 00 00 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 00 00 01 00 00 00 00 00 78 00 00 00 B0 ?? ?? 00 10 00 00 00 00 00 00 00 00 00 00 00 C0 ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 06 00 44 00 56 00 43 00 4C 00 41 00 4C 00 0B 00 50 00 41 00 43 00 4B 00 41 00 47 00 45 00 49 00 4E 00 46 00 4F 00 00 00 }
-
-condition:
-		$a0
-}
-	
-	
 
 rule D1S1Gv11BetaScrambledEXED1N
 {
@@ -7477,7 +7469,19 @@ strings:
 
 condition:
 		$a0 at pe.entry_point or $a1 at pe.entry_point
-}	
+}
+
+rule InstallAnywhere : ZeroG Software Inc
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	condition:
+		//check more
+		(uint32be(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) == 0x5B3E4E00)
+		and
+		(uint16be(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size+0x404) == 0x504B)
+}
 
 rule  InstallShieldInstaller
 {
@@ -8651,7 +8655,7 @@ rule mpress_071_212_Net : Matcode
 		$a1 = { 21 49 74 27 73 20 2E 4E 45 54 20 45 58 45 24 }
 	condition:
 		$a1 at 45 and
-		pe.imports ("mscoree.dll","_CorExeMain")
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain"))
 }
 
 rule mpress_077_x86 : Matcode
@@ -9433,22 +9437,155 @@ rule NeoLitevXX : NeoworxInc
 		$a0
 }
 
-rule DotNET_Reactor
+rule DotNET_PERun_Rev_Obfuscated
 {
 	meta:
 		author="_pusher_"
-		date="2016-06"
+		date="2016-07"
+	strings:	
+		$a0 = "daoL" wide ascii nocase
+		$a1 = "epyTteG" wide ascii nocase
+		$a2 = "dohteMteG" wide ascii nocase
+		$a3 = "ekovnI" wide ascii nocase
+		$a4 = "tnioPyrtnE" wide ascii nocase
+		$a5 = "hex2Byt" wide ascii nocase
+		$a6 = "Reverse" wide ascii nocase
+		$a7 = "PE\x00Run" wide ascii nocase
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 5 of ($a*)
+}
+
+rule DotNET_RunPE_Obfuscated
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = "conff" wide ascii nocase
+		$a1 = "isSandboxie" wide ascii nocase
+		$a2 = "isWPE" wide ascii nocase
+		$a3 = "Anti" wide ascii nocase
+		$a4 = "RunPE" wide ascii nocase
+		$a5 = "isFiddler" wide ascii nocase
+		$a6 = "DeCrypt" wide ascii nocase
+		$a7 = "CreateProcess" wide ascii nocase
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 4 of ($a*)
+}
+
+rule DotNET_VisualBasic_Malware
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = "_Lambda$__1" wide ascii nocase
+		$a1 = "_Lambda$__2" wide ascii nocase
+		$a2 = "GetKeyboardState" wide ascii nocase
+		$a3 = "Microsoft.VisualBasic.Devices" wide ascii nocase
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 4 of ($a*)
+}
+
+rule DotNET_ConfuserAvalon : Avalon
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = { 43 6F 6E 66 75 73 65 64 42 79 41 76 61 6C 6F 6E 50 72 6F 74 65 63 74 6F 72 }
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
+}
+
+rule DotNET_ConfuserEx : Ki
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = { 43 6F 6E 66 75 73 65 72 45 78 20 76 }
+		$a1 = { 43 6F 6E 66 75 73 65 64 42 79 41 74 74 72 69 62 75 74 65 00 41 74 74 72 69 62 75 74 65 }
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
+}
+
+rule DotNET_Crypto_Obfuscator : LogicNP Software
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = { 7E ?? ?? ?? ?? 02 91 20 3F FF FF FF 5F 1F 18 62 0A 06 7E ?? ?? ?? ?? 02 17 58 91 1F 10 62 60 0A 06 7E }
+		$a1 = { 20 ?? ?? 00 02 20 ?? ?? 00 0A 20 FF FF FF 00 28 ?? ?? ?? ?? 2A }
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
+}
+
+rule DotNET_DotFuscator : PreEmptive Solutions
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = { 00 44 6F 74 66 75 73 63 61 74 6F 72 41 74 74 72 69 62 75 74 65 00 }
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
+}
+
+rule DotNET_PhoenixProtector : NTCore
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = { 02 ?? ?? 00 00 ?? 0A 06 ?? ?? 00 00 01 0B 16 0C ?? ?? ?? ?? ?? 02 08 ?? ?? ?? ?? ?? 0D 09 06 08 59 61 D2 13 04 09 1E 63 08 61 D2 13 05 07 08 11 05 1E 62 11 04 60 D1 9D 08 17 58 }
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
+}
+
+rule DotNET_Gr0wlit_Obfuscator : Gr0wlit
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
+	strings:		
+		$a0 = "Gr0wlit_" wide ascii nocase
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)		
+}
+
+rule DotNET_Reactor : Eziriz
+{
+	meta:
+		author="_pusher_"
+		date="2016-07"
 	strings:	
 		//needs more work	
-		//$a0 = { 88 3C AC 15 71 FE DD E7 F7 0E 92 E2 BB 17 A2 CA 10 F3 0A 92 58 FB 7A F2 73 2F 2E 12 E1 FF A4 87 AD 9D 62 B1 8D E2 DD FB 99 68 FC 06 72 6E 1A 5D }
-		//v2
-		//$a1 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 32 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? 00 ?? 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
-		//v4
-		//$a2 = { 42 53 4A 42 01 00 01 00 00 00 00 00 0C 00 00 00 76 34 2E ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? 00 ?? 00 00 00 ?? ?? ?? 00 23 7E 00 00 ?? ?? ?? 00 ?? ?? ?? 00 23 53 74 72 69 6E 67 73 }
 		//needs improvements
-		$a3 = { 38 02 ?? ?? ?? 26 16 }
+		$a0 = { 38 02 ?? ?? ?? 26 16 }
+		$a1 = "System.Void System.Array::Reverse(System.Array)" fullword wide ascii nocase
+		$a2 = "System.Security.Cryptography.SymmetricAlgorithm" fullword wide ascii nocase
+		$a3 = "System.Security.Cryptography.AesCryptoServiceProvider" fullword wide ascii nocase
+		
+		
+
+		$b0 = "System.Diagnostics.Process" fullword wide ascii nocase
+		$b1 = "System.Diagnostics.StackFrame" fullword wide ascii nocase
+		
+		$c0 = "Rijndael" fullword wide ascii nocase
+		$c1 = "System.Security.Cryptography" fullword wide ascii nocase
+		$c2 = "ICryptoTransform" fullword wide ascii nocase
 	condition:
-		pe.imports ("mscoree.dll","_CorExeMain") and 1 of ($a*)
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) 
+		and 
+		( 
+		3 of ($c*) 
+		or
+		2 of ($b*) 
+		or
+		1 of ($a*)
+		)
 }
 
 
@@ -9463,35 +9600,19 @@ rule DotNET_NetzPacker : MadeBits
 		$a2 = "NetzSuffix" wide ascii nocase
 		$a3 = "NetzResolveEventHandler" wide ascii nocase
 	condition:
-		pe.imports ("mscoree.dll","_CorExeMain") and 4 of ($a*)		
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 4 of ($a*)		
 }
 
-
-rule NETDLLMicrosoft
+rule DotNET_SmartAssembly : RedGate
 {
 	meta:
-		author="malware-lu"
-strings:
-		$a0 = { 00 00 00 00 00 00 00 00 5F 43 6F 72 44 6C 6C 4D 61 69 6E 00 6D 73 63 6F 72 65 65 2E 64 6C 6C 00 00 ?? 00 00 FF 25 }
-
-condition:
-		$a0
+		author="_pusher_"
+		date="2016-07"
+	strings:	
+		$a0 = { 50 6F 77 65 72 65 64 20 62 79 20 53 6D 61 72 74 41 73 73 65 6D 62 6C 79 20 }
+	condition:
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
 }
-	
-	
-
-rule NETexecutableMicrosoft
-{
-	meta:
-		author="malware-lu"
-strings:
-		$a0 = { 00 00 00 00 00 00 00 00 5F 43 6F 72 45 78 65 4D 61 69 6E 00 6D 73 63 6F 72 65 65 2E 64 6C 6C 00 00 00 00 00 FF 25 }
-
-condition:
-		$a0
-}
-	
-	
 
 rule NFOv10
 {
