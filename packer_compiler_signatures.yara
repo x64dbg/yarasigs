@@ -4,33 +4,39 @@ import "math"
 rule IsPE32 : PECheck
 {
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint16(uint32(0x3C)+0x18) == 0x010B
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint16(uint32(0x3C)+0x18) == 0x010B
 }
 
 rule IsPE64 : PECheck
 {
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint16(uint32(0x3C)+0x18) == 0x020B
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint16(uint32(0x3C)+0x18) == 0x020B
 }
 
-rule IsNET : PECheck
+rule IsNET_EXE : PECheck
 {
 	condition:
 		pe.imports ("mscoree.dll","_CorExeMain")
 }
 
+rule IsNET_DLL : PECheck
+{
+	condition:
+		pe.imports ("mscoree.dll","_CorDllMain")
+}
+
 rule IsDLL : PECheck
 {
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
 		(uint16(uint32(0x3C)+0x16) & 0x2000) == 0x2000
 
 }
@@ -38,19 +44,19 @@ rule IsDLL : PECheck
 rule IsConsole : PECheck
 {
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint16(uint32(0x3C)+0x5C) == 0x0003
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint16(uint32(0x3C)+0x5C) == 0x0003
 }
 
 rule IsWindowsGUI : PECheck
 {
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint16(uint32(0x3C)+0x5C) == 0x0002
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint16(uint32(0x3C)+0x5C) == 0x0002
 }
 
 rule IsPacked : PECheck
@@ -58,10 +64,10 @@ rule IsPacked : PECheck
 	meta: 
 		description = "Entropy Check"
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint32(uint32(0x3C)) == 0x00004550 and
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
 		math.entropy(0, filesize) > 7.0
 }
 
@@ -70,10 +76,10 @@ rule HasOverlay : PECheck
 	meta: 
 		description = "Overlay Check"
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint32(uint32(0x3C)) == 0x00004550 and
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
 		(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) < filesize
 }
 
@@ -89,20 +95,50 @@ rule HasDigitalSignature : PECheck
 		$a0 = { ?? ?? ?? ?? 00 02 02 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 0B 30 09 06 05 2B 0E 03 02 1A 05 00 30 68 06 0A 2B 06 01 04 01 82 37 02 01 04 A0 5A 30 58 30 33 06 0A 2B 06 01 04 01 82 37 02 01 0F 30 25 03 01 00 A0 20 A2 1E 80 1C 00 3C 00 3C 00 3C 00 4F 00 62 00 73 00 6F 00 6C 00 65 00 74 00 65 00 3E 00 3E 00 3E 30 21 30 09 06 05 2B 0E 03 02 1A 05 00 04 14 }
 		$a1 = { ?? ?? ?? ?? 00 02 02 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 0B 30 09 06 05 2B 0E 03 02 1A 05 00 30 ?? 06 0A 2B 06 01 04 01 82 37 02 01 04 A0 ?? 30 ?? 30 ?? 06 0A 2B 06 01 04 01 82 37 02 01 0F 30 ?? 03 01 00 A0 ?? A2 ?? 80 00 30 21 30 09 06 05 2B 0E 03 02 1A 05 00 04 14 }
 		$a2 = { ?? ?? ?? ?? 00 02 02 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 0E 30 ?? 06 ?? ?? 86 48 86 F7 0D 02 05 05 00 30 67 06 0A 2B 06 01 04 01 82 37 02 01 04 A0 59 30 57 30 33 06 0A 2B 06 01 04 01 82 37 02 01 0F 30 25 03 01 00 A0 20 A2 1E 80 1C 00 3C 00 3C 00 3C 00 4F 00 62 00 73 00 6F 00 6C 00 65 00 74 00 65 00 3E 00 3E 00 3E 30 20 30 0C 06 08 2A 86 48 86 F7 0D 02 05 05 00 04 }
+		$a3 = { ?? ?? ?? ?? 00 02 02 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 0F 30 ?? 06 ?? ?? 86 48 01 65 03 04 02 01 05 00 30 78 06 0A 2B 06 01 04 01 82 37 02 01 04 A0 6A 30 68 30 33 06 0A 2B 06 01 04 01 82 37 02 01 0F 30 25 03 01 00 A0 20 A2 1E 80 1C 00 3C 00 3C 00 3C 00 4F 00 62 00 73 00 6F 00 6C 00 65 00 74 00 65 00 3E 00 3E 00 3E 30 31 30 0D 06 09 60 86 48 01 65 03 04 02 01 05 00 04 }
 	condition:
-     		// MZ signature at offset 0 and ...
-     		uint16(0) == 0x5A4D and
-    	 	// ... PE signature at offset stored in MZ header at 0x3C
-     		uint32(uint32(0x3C)) == 0x00004550 and
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
 		($a0 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize)
 		or 
 		($a1 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize)) 
 		or
 		($a2 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize))
+		or
+		($a3 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize))
 		) 
 
 		//its not always like this:
 		//and  uint32(@a0) == (filesize-(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size))
+}
+
+rule HasDebugData : PECheck
+{
+	meta: 
+		description = "DebugData Check"
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
+		((uint32(uint32(0x3C)+0xA8) >0x0) and (uint32be(uint32(0x3C)+0xAC) >0x0))
+}
+
+rule HasModified_DOS_Message : PECheck
+{
+	meta: 
+		description = "DOS Message Check"
+	strings:	
+		$a0 = "This program must be run under Win32" wide ascii nocase
+		$a1 = "This program cannot be run in DOS mode" wide ascii nocase
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and not
+		(for any of ($a*) : ($ in (0x0..uint32(uint32(0x3C)) )))
 }
 
 rule borland_cpp {
