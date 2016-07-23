@@ -101,15 +101,7 @@ rule HasDigitalSignature : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
-		($a0 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize)
-		or 
-		($a1 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize)) 
-		or
-		($a2 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize))
-		or
-		($a3 in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize))
-		) 
-
+		(for any of ($a*) : ($ in ( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)..filesize)) )
 		//its not always like this:
 		//and  uint32(@a0) == (filesize-(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size))
 }
@@ -133,6 +125,8 @@ rule HasModified_DOS_Message : PECheck
 	strings:	
 		$a0 = "This program must be run under Win32" wide ascii nocase
 		$a1 = "This program cannot be run in DOS mode" wide ascii nocase
+		//UniLink
+		$a2 = "This program requires Win32" wide ascii nocase
 	condition:
 		// MZ signature at offset 0 and ...
 		uint16(0) == 0x5A4D and
@@ -315,11 +309,12 @@ condition:
 		$a0 at pe.entry_point
 }
 
-rule FASM : flatassemblerDOTnet {
+rule FASM : flat assembler {
 //abit weak, needs more targets & testing
 	meta:
 		author = "_pusher_"
 		date = "2016-01"
+		description = "http://flatassembler.net"
 	//strings:
 		//$c0 = { 55 89 E5 83 EC 1C 8D 45 E4 6A 1C 50 FF 75 08 FF 15 ?? ?? ?? ?? 8B 45 E8 C9 C2 04 00 }
 	condition:
@@ -328,4 +323,17 @@ rule FASM : flatassemblerDOTnet {
 		(pe.linker_version.major == 1) and (pe.linker_version.minor >= 60) and (pe.linker_version.minor < 80) 
 		) 
 		//and $c0
+}
+
+rule masm32_tasm32
+{
+	meta:
+		author = "PEiD"
+		description = "MASM32 / TASM32"
+		group = "20"
+		function = "0"
+	strings:
+		$a0 = { 6A ?? E8 ?? ?? ?? ?? A3 }
+	condition:
+		$a0
 }
