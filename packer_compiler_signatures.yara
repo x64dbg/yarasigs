@@ -126,7 +126,7 @@ rule IsBeyondImageSize : PECheck
 	meta: 
 		author = "_pusher_"
 		date = "2016-07"
-		description = "Beyond ImageSize Check"
+		description = "Data Beyond ImageSize Check"
 	condition:
 		// MZ signature at offset 0 and ...
 		uint16(0) == 0x5A4D and
@@ -135,6 +135,24 @@ rule IsBeyondImageSize : PECheck
 		for any i in (0..pe.number_of_sections-1):
 		((pe.sections[i].virtual_address+pe.sections[i].virtual_size) > (uint32(uint32(0x3C)+0x50)))		
 }
+
+rule ImportTableIsBad : PECheck
+{
+	meta: 
+		author = "_pusher_ & mrexodia"
+		date = "2016-07"
+		description = "ImportTable Check"
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
+		(IsPE32 or IsPE64) and
+		( 		//Import_Table_RVA+Import_Data_Size .. cannot be outside imagesize
+		((uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x84+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))    > (uint32(uint32(0x3C)+0x50))
+		)		
+}
+
 
 rule HasModified_DOS_Message : PECheck
 {
@@ -168,7 +186,7 @@ rule HasRichSignature : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
-		(for any of ($a*) : ($ in (0x0.. uint32(0x3c) )))
+		(for any of ($a*) : ($ in (0x0..uint32(0x3c) )))
 }
 
 rule borland_cpp {
