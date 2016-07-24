@@ -74,6 +74,7 @@ rule IsPacked : PECheck
 rule HasOverlay : PECheck
 {
 	meta: 
+		author="_pusher_"
 		description = "Overlay Check"
 	condition:
 		// MZ signature at offset 0 and ...
@@ -109,7 +110,9 @@ rule HasDigitalSignature : PECheck
 rule HasDebugData : PECheck
 {
 	meta: 
+		author = "_pusher_"
 		description = "DebugData Check"
+		date="2016-07"
 	condition:
 		// MZ signature at offset 0 and ...
 		uint16(0) == 0x5A4D and
@@ -118,10 +121,27 @@ rule HasDebugData : PECheck
 		((uint32(uint32(0x3C)+0xA8) >0x0) and (uint32be(uint32(0x3C)+0xAC) >0x0))
 }
 
+rule IsBeyondImageSize : PECheck
+{
+	meta: 
+		author = "_pusher_"
+		date = "2016-07"
+		description = "Beyond ImageSize Check"
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
+		for any i in (0..pe.number_of_sections-1):
+		((pe.sections[i].virtual_address+pe.sections[i].virtual_size) > (uint32(uint32(0x3C)+0x50)))		
+}
+
 rule HasModified_DOS_Message : PECheck
 {
 	meta: 
+		author = "_pusher_"
 		description = "DOS Message Check"
+		date="2016-07"
 	strings:	
 		$a0 = "This program must be run under Win32" wide ascii nocase
 		$a1 = "This program cannot be run in DOS mode" wide ascii nocase
@@ -132,7 +152,23 @@ rule HasModified_DOS_Message : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and not
-		(for any of ($a*) : ($ in (0x0..uint32(uint32(0x3C)) )))
+		(for any of ($a*) : ($ in (0x0..uint32(0x3c) )))
+}
+
+rule HasRichSignature : PECheck
+{
+	meta: 
+		author = "_pusher_"
+		description = "Rich Signature Check"
+		date="2016-07"
+	strings:	
+		$a0 = "Rich" ascii
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
+		(for any of ($a*) : ($ in (0x0.. uint32(0x3c) )))
 }
 
 rule borland_cpp {
