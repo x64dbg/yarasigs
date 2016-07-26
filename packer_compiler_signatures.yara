@@ -118,7 +118,11 @@ rule HasDebugData : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
-		((uint32(uint32(0x3C)+0xA8) >0x0) and (uint32be(uint32(0x3C)+0xAC) >0x0))
+		//orginal
+		//((uint32(uint32(0x3C)+0xA8) >0x0) and (uint32be(uint32(0x3C)+0xAC) >0x0))
+		//((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) x64/x32
+		(IsPE32 or IsPE64) and
+		((uint32(uint32(0x3C)+0xA8+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5)) >0x0) and (uint32be(uint32(0x3C)+0xAC+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5)) >0x0))
 }
 
 rule IsBeyondImageSize : PECheck
