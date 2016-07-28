@@ -137,7 +137,10 @@ rule IsBeyondImageSize : PECheck
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
 		for any i in (0..pe.number_of_sections-1):
-		((pe.sections[i].virtual_address+pe.sections[i].virtual_size) > (uint32(uint32(0x3C)+0x50)))		
+		( 
+		(pe.sections[i].virtual_address+pe.sections[i].virtual_size) > (uint32(uint32(0x3C)+0x50)) or
+		(pe.sections[i].raw_data_offset+pe.sections[i].raw_data_size) > filesize
+		)
 }
 
 rule ImportTableIsBad : PECheck
@@ -153,7 +156,34 @@ rule ImportTableIsBad : PECheck
 		uint32(uint32(0x3C)) == 0x00004550 and
 		(IsPE32 or IsPE64) and
 		( 		//Import_Table_RVA+Import_Data_Size .. cannot be outside imagesize
-		((uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x84+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))    > (uint32(uint32(0x3C)+0x50))
+		((uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x84+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))     > (uint32(uint32(0x3C)+0x50)) 
+		or
+		(((uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x84+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))  == 0x0)
+		or
+		//tiny PE files..
+		(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) > filesize)
+
+		//or
+		//uint32(uint32(0x3C)+0x80) == 0x21000
+   		//uint32(uint32(uint32(0x3C)+0x80)) == 0x0
+		//pe.imports("", "")
+		)		
+}
+
+rule ExportTableIsBad : PECheck
+{
+	meta: 
+		author = "_pusher_ & mrexodia"
+		date = "2016-07"
+		description = "ExportTable Check"
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
+		(IsPE32 or IsPE64) and
+		( 		//Export_Table_RVA+Export_Data_Size .. cannot be outside imagesize
+		((uint32(uint32(0x3C)+0x78+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x7C+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))     > (uint32(uint32(0x3C)+0x50)) 
 		)		
 }
 
@@ -192,6 +222,20 @@ rule HasRichSignature : PECheck
 		uint32(uint32(0x3C)) == 0x00004550 and
 		(for any of ($a*) : ($ in (0x0..uint32(0x3c) )))
 }
+
+
+rule IsSuspicious
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+		description="Might be PE Virus"
+	condition:
+		uint32(0x20) == 0x20202020
+
+		
+}
+
 
 rule borland_cpp {
 	meta:
@@ -233,7 +277,6 @@ rule borland_delphi {
 		$c6 = { 50 6A ?? E8 ?? ?? FF FF BA ?? ?? ?? ?? 52 89 05 ?? ?? ?? ?? 89 42 04 C7 42 08 ?? ?? ?? ?? C7 42 0C ?? ?? ?? ?? E8 ?? ?? ?? ?? 5A 58 E8 ?? ?? ?? ?? C3 }
 	condition:
 		any of them
-		//($c0 or $c1 or $c2 or $c3 or $c4 or $c5 or $c6) 
 		and
 		(
 		//if its not linker 2.25 its been modified (unpacked usually)
@@ -241,6 +284,7 @@ rule borland_delphi {
 		((pe.linker_version.major == 2) and (pe.linker_version.minor == 25 )) or ((pe.linker_version.major == 8) and (pe.linker_version.minor == 0 ))
 		//unpacked files usually have this linker:
 		or ((pe.linker_version.major == 0) and (pe.linker_version.minor == 0 )) )
+		//could check for dvclal.. maybe too much
 }
 
 rule free_pascal {
@@ -356,15 +400,49 @@ condition:
 		$a0 at pe.entry_point
 }
 
-rule MinGWGCC3x
+rule Cygwin : Red Hat
 {
-      meta:
-		author="malware-lu"
-strings:
-		$a0 = { 55 89 E5 83 EC 08 C7 04 24 ?? 00 00 00 FF 15 ?? ?? ?? ?? E8 ?? ?? FF FF ?? ?? ?? ?? ?? ?? ?? ?? 55 }
+	meta:
+		author = "_pusher_"
+		date = "2016-07"
+	strings:		
+		$a0 = "cygwin1.dll" ascii nocase
+		$aa1 = "cygwin_internal"
+		$aa2 = "cygwin_detach_dll"
+	condition:
+		(
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 56 ) or
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 24 ) or
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 25 )
+		)
+		and
+		($a0 and (any of ($aa*) ))
+}
 
-condition:
-		$a0 at pe.entry_point
+rule MinGW
+{
+	meta:
+		author = "_pusher_"
+		date = "2016-07"
+	strings:		
+		$a0 = "msvcrt.dll" ascii nocase
+		$aa1 = "Mingw-w64 runtime failure:"
+		$aa2 = "-LIBGCCW32-EH-3-SJLJ-GTHR-MINGW32" wide ascii nocase
+		$aa3 = "_mingw32_init_mainargs"
+		//too wild ?
+		$aa4 = "mingw32"
+		$aa5 = "-LIBGCCW32-EH-2-SJLJ-GTHR-MINGW32" wide ascii nocase
+		$aa6 = "-GCCLIBCYGMING-EH-TDM1-SJLJ-GTHR-MINGW32" wide ascii nocase
+		$aa7 = "Mingw runtime failure:"
+	condition:
+		(
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 56 ) or
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 25 ) or
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 24 ) or
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 22 )
+		)
+		and
+		($a0 and (any of ($aa*) ))
 }
 
 rule FASM : flat assembler {
@@ -378,7 +456,7 @@ rule FASM : flat assembler {
 	condition:
 		(
 		//linker 1.60..1.79
-		(pe.linker_version.major == 1) and (pe.linker_version.minor >= 60) and (pe.linker_version.minor < 80) 
+		(pe.linker_version.major == 1) and ((pe.linker_version.minor >= 60) and (pe.linker_version.minor < 80))
 		) 
 		//and $c0
 }
