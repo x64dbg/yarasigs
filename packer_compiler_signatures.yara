@@ -84,6 +84,23 @@ rule HasOverlay : PECheck
 		(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) < filesize
 }
 
+rule HasTaggantSignature : PECheck
+{
+	meta: 
+		author="_pusher_"
+		description = "TaggantSignature Check"
+		date="2016-07"
+	strings:		
+		$a0 = { 54 41 47 47 ?? ?? ?? ?? ?? ?? 00 00 ?? 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 09 30 07 06 05 2B 0E 03 02 1A 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 01 A0 82 0E ?? 04 82 0E ?? ?? 00 01 00 ?? 00 }
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
+		//uint32be(@a0+0x04) < (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) and
+		$a0
+}
+
 
 rule HasDigitalSignature : PECheck
 {
@@ -459,6 +476,29 @@ rule FASM : flat assembler {
 		(pe.linker_version.major == 1) and ((pe.linker_version.minor >= 60) and (pe.linker_version.minor < 80))
 		) 
 		//and $c0
+}
+
+rule AutoIt
+{
+	meta:
+		author = "_pusher_"
+		date = "2016-07"
+		description = "www.autoitscript.com/site/autoit/"
+	strings:		
+		$aa0 = "AutoIt has detected the stack has become corrupt.\n\nStack corruption typically occurs when either the wrong calling convention is used or when the function is called with the wrong number of arguments.\n\nAutoIt supports the __stdcall (WINAPI) and __cdecl calling conventions.  The __stdcall (WINAPI) convention is used by default but __cdecl can be used instead.  See the DllCall() documentation for details on changing the calling convention." wide ascii nocase
+		$aa1 = "AutoIt Error" wide ascii nocase
+		$aa2 = "Missing right bracket ')' in expression." wide ascii nocase
+		$aa3 = "Missing operator in expression." wide ascii nocase
+		$aa4 = "Unbalanced brackets in expression." wide ascii nocase
+		$aa5 = "Error parsing function call." wide ascii nocase
+	
+		$aa6 = ">>>AUTOIT NO CMDEXECUTE<<<" wide ascii nocase
+		$aa7 = "#requireadmin" wide ascii nocase
+		$aa8 = "#OnAutoItStartRegister" wide ascii nocase
+		$aa9 = "#notrayicon" wide ascii nocase
+		$aa10 = "Cannot parse #include" wide ascii nocase
+	condition:
+		5 of ($aa*)
 }
 
 rule masm32_tasm32
