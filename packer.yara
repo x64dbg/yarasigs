@@ -4424,15 +4424,17 @@ rule EnigmaProtector : Vladmir Sukhov
 {
 	meta:
 		author="_pusher_"
-		date = "2015-12"
+		date = "2016-07"
 		
 	strings:
-		$normal1_sig = { 60 E8 00 00 00 00 5D 83 C5 FA 81 ED }
-		$a0 = { E8 01 00 00 00 9A 83 C4 04 EB 02 FF 35 60 E8 24 00 00 00 00 00 FF EB 02 CD 20 8B 44 24 0C 83 80 B8 00 00 00 03 31 C0 C3 83 C0 08 EB 02 FF 15 89 C4 61 EB 2E EA EB 2B 83 04 24 03 EB 01 00 31 C0 EB 01 85 64 FF 30 EB 01 83 64 89 20 EB 02 CD 20 89 00 9A 64 8F 05 00 00 00 00 EB 02 }
-		$delphi_fake = { 55 8B EC 83 C4 F0 B8 00 10 40 00 E8 01 00 00 00 9A 83 C4 10 8B E5 5D E9 }
+		$a0 = "ENIGMA" ascii
+		$aa1 = { 60 E8 00 00 00 00 5D 81 ED 06 00 00 00 81 ED ?? ?? ?? 00 E9 ?? 00 00 00 45 4E 49 47 4D 41 }
+		$aa2 = { C8 63 78 4F 45 53 50 16 24 F6 78 F2 F7 0A 6E 85 51 5A 0F 26 52 55 24 93 29 18 90 3A F4 FB E6 43 53 1B 52 01 98 00 60 E8 00 00 00 00 5D 83 C5 FA 81 ED }
+		$aa3 = { DE 4C A4 EE 26 40 68 60 3E B4 B8 E9 07 A8 F8 FD C7 9C 38 C1 8E A9 9E 48 AA 4A 9F E7 00 00 00 EB 08 00 0C 03 00 00 00 00 00 60 E8 00 00 00 00 5D 81 ED }
 	condition:
-		($delphi_fake at pe.entry_point) or 
-		($normal1_sig at pe.entry_point and $a0)
+		//needs more samples
+		($a0 at (pe.entry_point+0x18)) or (any of ($aa*) )
+
 }
 	
 	
