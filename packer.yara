@@ -7646,6 +7646,7 @@ rule IsArmadillo
 	pe.entry_point == 0x63000 or  //6.60.0140
 	pe.entry_point == 0x5487B or //7.0 beta 3
 	pe.entry_point == 0x31000 or //7.0.021
+	pe.entry_point == 0x6E05D or //7.40 (dll)
 	pe.entry_point == 0x6D540 or //8.60
 	pe.entry_point == 0x6EDAF or //8.60
 	pe.entry_point == 0x8312F or //8.60
@@ -16128,8 +16129,6 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
 
 rule RECryptv07xCruddRETh1
 {
@@ -18911,6 +18910,20 @@ rule tElockvhsm7x : tE
 		$a0 at pe.entry_point
 }
 
+rule TejonCrypter_v6 : RDG
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+	strings:
+		$a0 = { 68 3B 4A 73 AD 73 48 73 E4 73 48 73 16 9B 47 73 6B 62 49 73 81 D9 47 73 51 CB 47 73 86 CB 47 73 4D D1 47 73 51 DF 46 73 65 74 48 73 26 6E 48 73 73 6E 48 73 FD 7B 48 73 3F 7C 48 73 CF 99 46 73 EE 7D 48 73 8E 5B 47 73 E5 A0 3A 73 51 C9 47 73 E2 99 46 73 13 3A 4A 73 E0 98 46 73 24 46 48 73 1B 7C 49 73 04 88 49 73 6A 7C 48 73 91 7D 48 73 93 0D 48 73 2D 8E 48 73 5D D0 49 73 A9 C6 47 73 E5 DC 47 73 FB 0C 48 73 5C 54 48 73 C2 40 47 73 CD 10 48 73 BA ED 47 73 45 60 47 73 A4 35 3A 73 DE 6B 48 73 F1 6B 48 73 E2 6C 48 73 A7 30 47 73 }
+		$aa0 = { E8 90 90 45 65 76 2F B0 ?? C8 ?? 72 AC 60 C7 05 ?? 92 3E C2 32 DC 53 8E E6 D8 97 4F 75 B4 F9 B4 ?? 26 2B 3A 5E 03 A1 75 46 B4 68 20 B3 31 93 1E 2B B2 DE 62 78 59 5F 76 1F CC DE 49 07 7B }
+		$aa1 = { 0D 0A E8 90 90 45 65 76 2F B0 ?? C8 ?? 72 AC 60 C7 05 ?? 92 3E C2 32 DC 53 8E E6 D8 97 4F 75 B4 B8 B4 ?? 26 2B 3A 5E 03 A1 75 46 B4 68 20 B3 31 93 1E 2B B2 DE 62 78 59 5F 76 1F CC DE 49 07 7B }
+	condition:
+		$a0 or
+		//pe.overlay would be nice ;)
+		for any of ($aa*) : ($ at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size))
+}
 
 rule TheGuardLibrary
 {
@@ -18957,7 +18970,7 @@ rule Themida10xx1800compressedengineOreansTechnologies
 		author="malware-lu"
 strings:
 		$a0 = { B8 ?? ?? ?? ?? 60 0B C0 74 58 E8 00 00 00 00 58 05 43 00 00 00 80 38 E9 75 03 61 EB 35 E8 00 00 00 00 58 25 00 F0 FF FF 33 FF 66 BB 19 5A 66 83 C3 34 66 39 18 75 12 0F B7 50 3C 03 D0 BB E9 44 00 00 83 C3 67 39 1A 74 07 2D 00 10 00 00 EB DA 8B F8 B8 }
-	$a1 = { B8 ?? ?? ?? ?? 60 0B C0 74 58 E8 00 00 00 00 58 05 43 00 00 00 80 38 E9 75 03 61 EB 35 E8 00 00 00 00 58 25 00 F0 FF FF 33 FF 66 BB 19 5A 66 83 C3 34 66 39 18 75 12 0F B7 50 3C 03 D0 BB E9 44 00 00 83 C3 67 39 1A 74 07 2D 00 10 00 00 EB DA 8B F8 B8 ?? ?? ?? ?? 03 C7 B9 5A ?? ?? ?? 03 CF EB 0A B8 ?? ?? ?? ?? B9 5A ?? ?? ?? 50 51 E8 84 00 00 00 E8 00 00 00 00 58 2D 26 00 00 00 B9 EF 01 00 00 C6 00 E9 83 E9 05 89 48 01 61 E9 AF 01 }
+		$a1 = { B8 ?? ?? ?? ?? 60 0B C0 74 58 E8 00 00 00 00 58 05 43 00 00 00 80 38 E9 75 03 61 EB 35 E8 00 00 00 00 58 25 00 F0 FF FF 33 FF 66 BB 19 5A 66 83 C3 34 66 39 18 75 12 0F B7 50 3C 03 D0 BB E9 44 00 00 83 C3 67 39 1A 74 07 2D 00 10 00 00 EB DA 8B F8 B8 ?? ?? ?? ?? 03 C7 B9 5A ?? ?? ?? 03 CF EB 0A B8 ?? ?? ?? ?? B9 5A ?? ?? ?? 50 51 E8 84 00 00 00 E8 00 00 00 00 58 2D 26 00 00 00 B9 EF 01 00 00 C6 00 E9 83 E9 05 89 48 01 61 E9 AF 01 }
 
 condition:
 		$a0 at pe.entry_point or $a1 at pe.entry_point
@@ -18971,7 +18984,7 @@ rule Themida10xx18xxnocompressionOreansTechnologies
 		author="malware-lu"
 strings:
 		$a0 = { 55 8B EC 83 C4 D8 60 E8 00 00 00 00 5A 81 EA ?? ?? ?? ?? 8B DA C7 45 D8 00 00 00 00 8B 45 D8 40 89 45 D8 81 7D D8 80 00 00 00 74 0F 8B 45 08 89 83 ?? ?? ?? ?? FF 45 08 43 EB E1 89 45 DC 61 8B 45 DC C9 C2 04 00 55 8B EC 81 C4 7C FF FF FF 60 E8 00 00 00 00 }
-	$a1 = { 55 8B EC 83 C4 D8 60 E8 00 00 00 00 5A 81 EA ?? ?? ?? ?? 8B DA C7 45 D8 00 00 00 00 8B 45 D8 40 89 45 D8 81 7D D8 80 00 00 00 74 0F 8B 45 08 89 83 ?? ?? ?? ?? FF 45 08 43 EB E1 89 45 DC 61 8B 45 DC C9 C2 04 00 55 8B EC 81 C4 7C FF FF FF 60 E8 00 00 00 00 5A 81 EA ?? ?? ?? ?? 8D 45 80 8B 5D 08 C7 85 7C FF FF FF 00 00 00 00 8B 8D 7C FF FF FF D1 C3 88 18 41 89 8D 7C FF FF FF 81 BD 7C FF FF FF 80 00 00 00 75 E3 C7 85 7C FF FF FF 00 00 00 00 8D BA ?? ?? ?? ?? 8D 75 80 8A 0E BB F4 01 00 00 B8 AB 37 54 78 D3 D0 8A 0F D3 D0 4B 75 F7 0F AF C3 47 46 8B 8D 7C FF FF FF 41 89 8D 7C FF FF FF 81 F9 80 00 00 00 75 D1 61 C9 C2 04 00 55 8B EC 83 C4 F0 8B 75 08 C7 45 FC 00 00 00 00 EB 04 FF 45 FC 46 80 3E 00 75 F7 BA 00 00 00 00 8B 75 08 8B 7D 0C EB 7F C7 45 F8 00 00 00 00 EB }
+		$a1 = { 55 8B EC 83 C4 D8 60 E8 00 00 00 00 5A 81 EA ?? ?? ?? ?? 8B DA C7 45 D8 00 00 00 00 8B 45 D8 40 89 45 D8 81 7D D8 80 00 00 00 74 0F 8B 45 08 89 83 ?? ?? ?? ?? FF 45 08 43 EB E1 89 45 DC 61 8B 45 DC C9 C2 04 00 55 8B EC 81 C4 7C FF FF FF 60 E8 00 00 00 00 5A 81 EA ?? ?? ?? ?? 8D 45 80 8B 5D 08 C7 85 7C FF FF FF 00 00 00 00 8B 8D 7C FF FF FF D1 C3 88 18 41 89 8D 7C FF FF FF 81 BD 7C FF FF FF 80 00 00 00 75 E3 C7 85 7C FF FF FF 00 00 00 00 8D BA ?? ?? ?? ?? 8D 75 80 8A 0E BB F4 01 00 00 B8 AB 37 54 78 D3 D0 8A 0F D3 D0 4B 75 F7 0F AF C3 47 46 8B 8D 7C FF FF FF 41 89 8D 7C FF FF FF 81 F9 80 00 00 00 75 D1 61 C9 C2 04 00 55 8B EC 83 C4 F0 8B 75 08 C7 45 FC 00 00 00 00 EB 04 FF 45 FC 46 80 3E 00 75 F7 BA 00 00 00 00 8B 75 08 8B 7D 0C EB 7F C7 45 F8 00 00 00 00 EB }
 
 condition:
 		$a0 or $a1
@@ -19489,10 +19502,11 @@ rule ThunderBolt : deXep
 		//this is same as mPack becasuse mPack uses ThunderBolt
 		//difference is mPack has overlay
 		$a0 = { E9 00 00 00 00 60 E8 14 00 00 00 5D 81 ED 00 00 00 00 6A 45 E8 A3 00 00 00 68 00 00 00 00 E8 58 61 E8 AA 00 00 00 4E ?? ?? 00 00 00 00 00 00 00 00 00 5E ?? ?? 00 4E ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 6C ?? ?? 00 7D ?? ?? 00 90 ?? ?? 00 00 00 00 00 4B 45 52 4E 45 4C 33 32 2E 64 6C 6C 00 00 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 00 00 47 65 74 4D 6F 64 75 6C 65 48 61 6E 64 6C 65 41 00 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 ?? ?? 00 00 ?? ?? 00 00 56 69 72 74 75 61 6C 41 6C 6C 6F 63 }
+		//$a1 = { 8D 75 5E 56 FF 55 52 0B C0 75 04 56 FF 55 56 8D B5 A7 00 00 00 56 50 FF 55 4E 89 85 B4 00 00 00 6A 04 68 00 10 00 00 FF B5 A3 00 00 00 6A 00 FF 95 B4 00 00 00 50 8B 9D 9F 00 00 00 03 DD 50 53 E8 36 00 00 00 5A B9 03 00 00 00 8D 75 4E 8D BA 06 19 00 00 8B 06 89 07 83 C6 04 83 C7 04 E2 F4 8D 85 A1 02 00 00 89 82 2A 19 00 00 8B 85 B4 00 00 00 89 82 12 19 00 00 0E 52 CB }
 	condition:
 		$a0 at pe.entry_point and
 		(pe.sections[pe.number_of_sections-1].raw_data_offset+
-		 pe.sections[pe.number_of_sections-1].raw_data_size == filesize)
+		pe.sections[pe.number_of_sections-1].raw_data_size == filesize)
 }
 
 rule TMTPascalv040
@@ -20456,6 +20470,8 @@ rule UPX_OEP_place
 		$a3 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 8D BE ?? ?? ?? ?? 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB D8 FF 96 ?? ?? ?? ?? 61 E9 }
 		$a4 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 8D BE 00 60 00 00 8B 07 09 C0 74 3C 8B 5F 04 8D 84 30 10 85 00 00 01 F3 50 83 C7 08 FF 96 4C 85 00 00 95 8A 07 47 08 C0 74 DC 89 F9 57 48 F2 AE 55 FF 96 50 85 00 00 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 54 85 00 00 61 E9 }
 		$a10 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 5F 8B 07 09 C0 74 43 8B 5F 04 8D 84 30 C8 1E 07 00 01 F3 50 83 C7 08 FF 96 A4 1F 07 00 92 8A 07 47 08 C0 74 DC 52 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 52 FF 96 A8 1F 07 00 5A 09 C0 74 07 89 03 83 C3 04 EB D6 61 C3 61 E9 }
+		//dll unknown ver
+		$a11 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 8D BE 00 C0 05 00 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 4C 6E 06 00 01 F3 50 83 C7 08 FF 96 00 6F 06 00 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 04 6F 06 00 09 C0 74 07 89 03 83 C3 04 EB D8 61 31 C0 C2 0C 00 83 C7 04 8D 5E FC 31 C0 8A 07 47 09 C0 74 22 3C EF 77 11 01 C3 8B 03 86 C4 C1 C0 10 86 C4 01 F0 89 03 EB E2 24 0F C1 E0 10 66 8B 07 83 C7 02 EB E2 61 E9 }
 	condition:
 		any of them
 }
@@ -21067,35 +21083,7 @@ strings:
 
 condition:
 		$a0 at pe.entry_point
-}
-	
-	
-
-rule VideoLanClient
-{
-	meta:
-		author="malware-lu"
-strings:
-		$a0 = { 55 89 E5 83 EC 08 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? FF FF }
-
-condition:
-		$a0 at pe.entry_point
-}
-	
-	
-
-rule VideoLanClientUnknownCompiler
-{
-	meta:
-		author="malware-lu"
-strings:
-		$a0 = { 55 89 E5 83 EC 08 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? FF FF ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 ?? ?? ?? ?? ?? ?? ?? 00 }
-
-condition:
-		$a0 at pe.entry_point
-}
-	
-	
+}	
 
 rule VirogenCryptv075
 {
@@ -21120,8 +21108,28 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule Virut_PE_Virus
+{
+	meta:
+		author="_pusher_"
+		date = "2016-07"
+		description="PE Virus"
+	strings:
+		$a0 = { E8 00 00 00 00 55 8B 5C 24 08 8B 6C 24 04 81 6C 24 04 ?? ?? ?? 00 81 E3 00 F0 FF FF 81 ED 05 10 40 00 81 7B 4E 54 68 69 73 75 0C 8B 43 3C 03 C3 66 81 38 50 45 74 08 81 EB 00 01 00 00 EB E3 8B 50 78 03 D3 8B 72 20 8B 4A 18 03 F3 51 AD 03 C3 81 78 FF 00 47 65 74 75 1B 81 78 03 50 72 6F 63 75 12 81 78 07 41 64 64 72 75 09 81 78 0B 65 73 73 00 74 05 E2 D7 59 5D C3 }
+		$aa1 = "{NThisu"
+		$aa2 = "Procu"
+		$aa3 = "Addru"
+		$aa4 = "Getu"
+		$aa5 = "CreateEventA"
+	condition:
+		($a0 at pe.entry_point) or
+		(
+		any of ($aa*) and
+		uint32(0x20) == 0x20202020
+		)
+		
+}	
 
 rule VIRUSIWormBagle
 {
