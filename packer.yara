@@ -9472,22 +9472,10 @@ rule DotNET_RunPE_Obfuscated
 		$a5 = "isFiddler" wide ascii nocase
 		$a6 = "DeCrypt" wide ascii nocase
 		$a7 = "CreateProcess" wide ascii nocase
+		$a8 = "SbieDll" wide ascii nocase
+		$a9 = "InjectPE" wide ascii nocase
 	condition:
-		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 4 of ($a*)
-}
-
-rule DotNET_VisualBasic_Malware
-{
-	meta:
-		author="_pusher_"
-		date="2016-07"
-	strings:	
-		$a0 = "_Lambda$__1" wide ascii nocase
-		$a1 = "_Lambda$__2" wide ascii nocase
-		$a2 = "GetKeyboardState" wide ascii nocase
-		$a3 = "Microsoft.VisualBasic.Devices" wide ascii nocase
-	condition:
-		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 4 of ($a*)
+		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 5 of ($a*)
 }
 
 rule DotNET_ConfuserAvalon : Avalon
@@ -9736,12 +9724,18 @@ rule NoobyProtectSE1x : Nooby
 {
 	meta:
 		author="_pusher_"
-		date = "2015-12"
+		date = "2016-07"
 	strings:
 		//i know this is abit weak
-		$a0 = { 00 00 00 4E 6F 6F 62 79 50 72 6F 74 65 63 74 20 53 45 20 31 2E }
+		//$a0 = { 00 00 00 4E 6F 6F 62 79 50 72 6F 74 65 63 74 20 53 45 20 31 2E }
+		//might be wrong also
+		$a0 = "\x00\x00\x00NoobyProtect SE 1." ascii nocase
+		//need more samples... replace 20 with wildcard ?
+		$a1 = { 74 06 80 33 20 43 E2 FA 83 C4 04 59 5B 9D }
 	condition:
-		($a0 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size))
+		$a0 at pe.entry_point+0x02 or
+		$a1
+		//($a0 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size))
 }	
 
 rule Noodlecrypt2rsc
@@ -20469,11 +20463,12 @@ rule UPX_OEP_place
 		$a6 = { 74 22 3C EF 77 11 01 C3 8B 03 86 C4 C1 C0 10 86 C4 01 F0 89 03 EB E2 24 0F C1 E0 10 66 8B 07 83 C7 02 EB E2 8B AE ?? ?? ?? ?? 8D BE 00 F0 FF FF BB 00 10 00 00 50 54 6A 04 53 57 FF D5 8D ?? ?? ?? ?? ?? 80 20 7F 80 60 28 7F 58 50 54 50 53 57 FF D5 58 61 8D 44 24 80 6A 00 39 C4 75 FA 83 EC 80 E9 }
 		$a7 = { 74 DC 89 F9 57 48 F2 AE 55 FF 96 98 12 FC 02 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 A8 12 FC 02 8B AE ?? ?? ?? ?? 8D BE 00 F0 FF FF BB 00 10 00 00 50 54 6A 04 53 57 FF D5 8D ?? ?? ?? ?? ?? 80 20 7F 80 60 28 7F 58 50 54 50 53 57 FF D5 58 61 8D 44 24 80 6A 00 39 C4 75 FA 83 EC 80 E9 }
 		//older upx 0.76 - 0.84
-		$a3 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 8D BE ?? ?? ?? ?? 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB D8 FF 96 ?? ?? ?? ?? 61 E9 }
+		$a3 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 8D BE ?? ?? ?? ?? 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB D8 FF 96 ?? ?? ?? ?? 61 E9 }
 		$a4 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 8D BE 00 60 00 00 8B 07 09 C0 74 3C 8B 5F 04 8D 84 30 10 85 00 00 01 F3 50 83 C7 08 FF 96 4C 85 00 00 95 8A 07 47 08 C0 74 DC 89 F9 57 48 F2 AE 55 FF 96 50 85 00 00 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 54 85 00 00 61 E9 }
 		$a10 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 5F 8B 07 09 C0 74 43 8B 5F 04 8D 84 30 C8 1E 07 00 01 F3 50 83 C7 08 FF 96 A4 1F 07 00 92 8A 07 47 08 C0 74 DC 52 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 52 FF 96 A8 1F 07 00 5A 09 C0 74 07 89 03 83 C3 04 EB D6 61 C3 61 E9 }
 		//dll unknown ver
-		$a11 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 8D BE 00 C0 05 00 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 4C 6E 06 00 01 F3 50 83 C7 08 FF 96 00 6F 06 00 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 04 6F 06 00 09 C0 74 07 89 03 83 C3 04 EB D8 61 31 C0 C2 0C 00 83 C7 04 8D 5E FC 31 C0 8A 07 47 09 C0 74 22 3C EF 77 11 01 C3 8B 03 86 C4 C1 C0 10 86 C4 01 F0 89 03 EB E2 24 0F C1 E0 10 66 8B 07 83 C7 02 EB E2 61 E9 }
+		$a11 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 89 D8 E2 D9 8D BE 00 ?? ?? 00 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB D8 61 31 C0 C2 0C 00 83 C7 04 8D 5E FC 31 C0 8A 07 47 09 C0 74 22 3C EF 77 11 01 C3 8B 03 86 C4 C1 C0 10 86 C4 01 F0 89 03 EB E2 24 0F C1 E0 10 66 8B 07 83 C7 02 EB E2 61 E9 }
+		$a12 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 88 D8 E2 D9 8D BE 00 ?? ?? 00 8B 07 09 C0 74 3C 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 ?? ?? ?? ?? 8B AE ?? ?? ?? ?? 8D BE 00 F0 FF FF BB 00 10 00 00 50 54 6A 04 53 57 FF D5 8D 87 ?? ?? ?? ?? 80 20 7F 80 60 28 7F 58 50 54 50 53 57 FF D5 58 EB 02 61 E9 }
 	condition:
 		any of them
 }
@@ -22323,6 +22318,20 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
+
+rule WarBird
+{
+	meta:
+		author="Nukem9"
+		date = "2016-08"
+		description="Match the PEB.Ldr assembly for warbird function resolution"
+		link = "https://thisissecurity.net/2014/10/15/warbird-operation/"
+	strings:
+		$a = {64 A1 30 00 00 00 2B CA D1 F9 8B 40 0C 83 C0 0C}
+	condition:
+		$a
+}
+
 
 rule WebCopsDLLLINKDataSecurity
 {
