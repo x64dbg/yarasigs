@@ -91,12 +91,15 @@ rule HasTaggantSignature : PECheck
 		description = "TaggantSignature Check"
 		date="2016-07"
 	strings:		
-		$a0 = { 54 41 47 47 ?? ?? ?? ?? ?? ?? 00 00 ?? 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 09 30 07 06 05 2B 0E 03 02 1A 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 01 A0 82 0E ?? 04 82 0E ?? ?? 00 01 00 ?? 00 }
+		$a0 = { 54 41 47 47 ?? ?? ?? ?? ?? ?? 00 00 ?? 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 09 30 07 06 05 2B 0E 03 02 1A 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 01 A0 82 ?? ?? 04 82 ?? ?? ?? 00 01 00 ?? ?? }
 	condition:
 		// MZ signature at offset 0 and ...
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
+		//TAGG+4E==packerid
+		//(uint32be(@a0+0x4E) == 0x0B51D132) and
+
 		//uint32be(@a0+0x04) < (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) and
 		$a0
 }
@@ -216,6 +219,7 @@ rule HasModified_DOS_Message : PECheck
 		$a1 = "This program cannot be run in DOS mode" wide ascii nocase
 		//UniLink
 		$a2 = "This program requires Win32" wide ascii nocase
+		$a3 = "This program must be run under Win64" wide ascii nocase
 	condition:
 		// MZ signature at offset 0 and ...
 		uint16(0) == 0x5A4D and
@@ -350,10 +354,15 @@ rule PureBasic : Neil Hodgson
 		author="_pusher_"
 		date="2016-07"
 	strings:
+		//make check for msvrt.dll
 		$c0 = { 55 8B EC 6A 00 68 00 10 00 00 6A ?? FF 15 ?? ?? ?? ?? A3 ?? ?? ?? ?? C7 05 ?? ?? ?? ?? 00 00 00 00 C7 05 ?? ?? ?? ?? 10 00 00 00 A1 ?? ?? ?? ?? 50 6A ?? 8B 0D ?? ?? ?? ?? 51 FF 15 ?? ?? ?? ?? A3 ?? ?? ?? ?? 5D C3 CC CC CC CC CC CC CC CC CC }
 		$c1 = { 68 ?? ?? 00 00 68 00 00 00 00 68 ?? ?? ?? 00 E8 ?? ?? ?? 00 83 C4 0C 68 00 00 00 00 E8 ?? ?? ?? 00 A3 ?? ?? ?? 00 68 00 00 00 00 68 00 10 00 00 68 00 00 00 00 E8 ?? ?? ?? 00 A3 }
+		$aa0 = "\x00MSVCRT.dll\x00" ascii
+		$aa1 = "\x00CRTDLL.dll\x00" ascii
 	condition:
-		(for any of ($c0,$c1) : ( $ at pe.entry_point  )) and ((pe.linker_version.major == 2) and (pe.linker_version.minor == 50 ))
+		(for any of ($c0,$c1) : ( $ at pe.entry_point  )) and 
+		(any of ($aa*) ) and
+		((pe.linker_version.major == 2) and (pe.linker_version.minor == 50 ))
 }
 
 rule PureBasicDLL : Neil Hodgson
