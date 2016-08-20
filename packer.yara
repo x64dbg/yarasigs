@@ -178,8 +178,18 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+
+rule ActiveMARK : Trymedia Systems Inc
+{
+	meta:
+		author="_pusher_"
+		date = "2016-08"		
+	strings:
+		$a0 = { 00 54 4D 53 41 4D 56 4F 48 A4 9B FD FF 26 24 E9 D7 F1 D6 F0 D6 AE BE FC D6 DF B5 C1 D0 1F 07 CE EF EE DD DE 4F F1 D1 AE BE }
+	condition:
+		$a0 at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)
+}
 
 rule ActiveMARK5xTrymediaSystemsInc
 {
@@ -2649,17 +2659,15 @@ condition:
 	
 	
 
-rule BeRoEXEPackerV100 : BeRo
+rule BeRoEXEPacker : BeRo
 {
 	meta:
 		author="_pusher_"
-		date = "2015-12"
+		date = "2016-08"
 	strings:
-		$a0 = { 28 43 29 42 65 52 6F 21 }
-		$a1 = { 28 43 29 27 30 36 42 65 52 6F }
-		$a2 = { BA ?? ?? ?? ?? 8D B2 ?? ?? ?? ?? 8B 46 ?? 85 C0 74 51 03 C2 8B 7E ?? 8B 1E 85 DB 75 02 8B DF 03 DA 03 FA 52 57 50 FF 15 ?? ?? ?? ?? 5F 5A 85 C0 74 2F 8B C8 8B 03 85 C0 74 22 0F BA F0 1F 72 04 8D 44 ?? ?? 51 52 57 50 51 FF 15 ?? ?? ?? ?? 5F 5A 59 85 C0 74 0B AB 83 C3 04 EB D8 83 C6 14 EB AA 61 C3 }
+		$a0 = { 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 00 00 47 65 74 50 72 6F 63 41 64 64 72 65 73 73 00 }
 	condition:
-		($a0 at 0x04 or $a1 at 0x02) and $a2
+		(uint32(0x3C) == 0x0000000C) and $a0 at 0x228
 }
 	
 	
@@ -4424,16 +4432,26 @@ rule EnigmaProtector : Vladmir Sukhov
 {
 	meta:
 		author="_pusher_"
-		date = "2016-07"
+		date = "2016-08"
 		
 	strings:
 		$a0 = "ENIGMA" ascii
-		$aa1 = { 60 E8 00 00 00 00 5D 81 ED 06 00 00 00 81 ED ?? ?? ?? 00 E9 ?? 00 00 00 45 4E 49 47 4D 41 }
+		$aa1 = { 60 E8 00 00 00 00 5D 81 ED ?? 00 00 00 81 ED ?? ?? ?? 00 E9 ?? 00 00 00 }
 		$aa2 = { C8 63 78 4F 45 53 50 16 24 F6 78 F2 F7 0A 6E 85 51 5A 0F 26 52 55 24 93 29 18 90 3A F4 FB E6 43 53 1B 52 01 98 00 60 E8 00 00 00 00 5D 83 C5 FA 81 ED }
 		$aa3 = { DE 4C A4 EE 26 40 68 60 3E B4 B8 E9 07 A8 F8 FD C7 9C 38 C1 8E A9 9E 48 AA 4A 9F E7 00 00 00 EB 08 00 0C 03 00 00 00 00 00 60 E8 00 00 00 00 5D 81 ED }
+	
+		$bb0 = "virtualboxemulunit" wide ascii nocase
+		$bb1 = "virtualboximportunit" wide ascii nocase
+		$bb2 = "virtualboxunit" wide ascii nocase
+		$bb3 = "enigma_keygen_routines" wide ascii nocase
+		$bb4 = "virtualboxdatabase" wide ascii nocase
+		$bb5 = "virtualboxdisasm" wide ascii nocase
+		$bb6 = "StringHashUnit" wide ascii nocase
+		$bb7 = "virtualboxglobalsunit" wide ascii nocase
+		$bb8 = "VirtualBoxGlobals" wide ascii nocase
 	condition:
 		//needs more samples
-		($a0 at (pe.entry_point+0x18)) or (any of ($aa*) )
+		($a0 at (pe.entry_point+0x18)) or (any of ($aa*) ) or 5 of ($bb*)
 
 }
 	
@@ -12633,8 +12651,18 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule PellesCInstaller
+{
+	meta:
+		author="_pusher_"
+		date = "2016-08"
+	strings:
+		$a0 = { 01 00 00 00 EF BE AD DE 50 65 6C 6C 65 73 43 5F 49 6E 73 74 }
+	condition:
+		$a0 at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) and
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 50 )
+}
 
 rule PellesC280290EXEX86CRTLIB
 {
@@ -19144,7 +19172,7 @@ rule Themida_2xx : Oreans Technologies
 {
 	meta:
 		author="_pusher_"
-		date = "2015-11"
+		date = "2016-08"
 	strings:
 		$a0 = { E8 01 00 00 00 CC }
 		$a1 = { 80 3B CC 0F 85 5F 00 00 00 }
@@ -19154,10 +19182,14 @@ rule Themida_2xx : Oreans Technologies
 		$a4 = { EB F2 5E 59 5B 58 C9 C2 10 00 }
 		//x64
 		$a5 = { EB F0 5E 59 5B 58 C9 C2 20 00 }
+		$a6 = { 80 3B CC 75 19 C6 03 00 }
 	condition:
-		($a0 in (pe.entry_point..pe.entry_point+0x50)
+		//($a0 in (pe.entry_point..pe.entry_point+0x50)
+		for any i in (0..pe.number_of_sections - 1):
+		(  $a0 in (pe.sections[i].raw_data_offset..pe.sections[i].raw_data_offset+0x50)  )
 		and ($a1 or $a2)
-		and ($a3 or $a4 or $a5))
+		and ($a3 or $a4 or $a5 or $a6)
+		
 }
 
 rule theWRAPbyTronDoc
@@ -21122,7 +21154,7 @@ rule Virut_PE_Virus
 	condition:
 		($a0 at pe.entry_point) or
 		(
-		any of ($aa*) and
+		4 of ($aa*) and
 		uint32(0x20) == 0x20202020
 		)
 		
@@ -21164,8 +21196,6 @@ strings:
 condition:
 		$a0
 }
-	
-	
 
 rule VMProtect07x08PolyTech
 {
@@ -21203,35 +21233,49 @@ rule VMProtectOlder : VMProtect Software
 		$a0 or $a1 or $a2
 }
 
+rule VMProtectSDK : VMProtect Software
+{
+	meta:
+		author="_pusher_"
+		date = "2016-08"
+	strings:
+		//wild check for weirdo obfuscate
+		$aa0 = { 9C 9C 9C 8D 64 24 ?? E9 }
+		$aa1 = { 9C 9C 9C 8F 44 24 ?? E9 }
+		$aa2 = { 9C 9C 9C 79 2F 2F 2F FF 2F }
+		$aa3 = { 9C 9C 9C F2 72 28 DA EA }
+	condition:
+		any of ($aa*)
+		
+}
+
 rule VMProtect : VMProtect Software
 {
 	meta:
 		author="_pusher_"
-		date = "2015-12"
+		date = "2016-08"
 	strings:
 		//GetModuleHandleA
-		$a0 = { 00 00 47 65 74 4D 6F 64 75 6C 65 48 61 6E 64 6C 65 41 00 }
-		//LoadLibraryA
-		$a1 = { 00 00 4C 6F 61 64 4C 69 62 72 61 72 79 41 00 }
+		$bb0 = "\x00\x00GetModuleHandleA\x00" ascii
 		//GetModuleHandleW
-		$a2 = { 00 00 47 65 74 4D 6F 64 75 6C 65 48 61 6E 64 6C 65 57 00 }
+		$bb1 = "\x00\x00GetModuleHandleW\x00" ascii
+		//ExitProcess
+		$bb2 = "\x00\x00ExitProcess\x00" ascii
+
+		//LoadLibraryA
+		$a1 = "\x00\x00LoadLibraryA\x00" ascii
 		//GetModuleFileNameW
-		$a3 = { 00 00 47 65 74 4D 6F 64 75 6C 65 46 69 6C 65 4E 61 6D 65 57 00 }
+		$cc0 = "\x00\x00GetModuleFileNameW\x00" ascii
 		//GetModuleFileNameA
-		$a4 = { 00 00 47 65 74 4D 6F 64 75 6C 65 46 69 6C 65 4E 61 6D 65 41 00 }
-		//ExitProcess (dll)
-		$a5 = { 00 00 45 78 69 74 50 72 6F 63 65 73 73 00 }
+		$cc1 = "\x00\x00GetModuleFileNameA\x00" ascii
 	condition:
 		(
-		($a0 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size)) or
-		($a2 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size)) or
-		($a5 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size))
+		for any of ($bb*) : ($ in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size))
 		) and
 		($a1 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size)) 
 		and
 		(
-		($a3 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size)) or
-		($a4 in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size))
+		for any of ($cc*) : ($ in (pe.sections[pe.section_index(pe.entry_point)].raw_data_offset..pe.sections[pe.section_index(pe.entry_point)].raw_data_offset+pe.sections[pe.section_index(pe.entry_point)].raw_data_size))
 		)
 		and 
 		(
@@ -22327,7 +22371,7 @@ rule WarBird
 		description="Match the PEB.Ldr assembly for warbird function resolution"
 		link = "https://thisissecurity.net/2014/10/15/warbird-operation/"
 	strings:
-		$a = {64 A1 30 00 00 00 2B CA D1 F9 8B 40 0C 83 C0 0C}
+		$a = { 64 A1 30 00 00 00 2B CA D1 F9 8B 40 0C 83 C0 0C }
 	condition:
 		$a
 }
@@ -23244,17 +23288,23 @@ rule ZProtect
 		date = "2015-12"
 	strings:
 		//1.6
-		$a0 = { 00 04 00 00 00 66 00 00 00 0B 00 76 00 00 00 E4 CB 01 00 BC 88 02 00 5C 33 03 00 80 2F 06 00 00 00 8A 16 01 00 00 00 47 12 02 00 00 00 61 BB 02 00 00 00 EF BD 04 00 01 00 A0 79 02 00 01 00 CF 20 03 00 01 00 6B 83 04 00 03 00 E9 83 04 00 04 00 14 84 04 00 05 00 8B 84 04 00 06 00 44 85 04 00 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 38 DB A8 5F A6 22 79 C0 }
-		$a1 = { 00 04 00 00 00 66 00 00 00 0B 00 76 00 00 00 E4 CB 01 00 80 DF 04 00 BC 98 05 00 5C 43 06 00 00 00 8A 16 01 00 00 00 EF 6D 03 00 00 00 47 22 05 00 00 00 61 CB 05 00 01 00 6B 33 03 00 03 00 E9 33 03 00 04 00 14 34 03 00 05 00 8B 34 03 00 06 00 44 35 03 00 01 00 A0 89 05 00 01 00 CF 30 06 00 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 38 DB A8 5F A6 22 79 C0 }
+		$aa0 = { 00 04 00 00 00 66 00 00 00 0B 00 76 00 00 00 E4 CB 01 00 BC 88 02 00 5C 33 03 00 80 2F 06 00 00 00 8A 16 01 00 00 00 47 12 02 00 00 00 61 BB 02 00 00 00 EF BD 04 00 01 00 A0 79 02 00 01 00 CF 20 03 00 01 00 6B 83 04 00 03 00 E9 83 04 00 04 00 14 84 04 00 05 00 8B 84 04 00 06 00 44 85 04 00 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 38 DB A8 5F A6 22 79 C0 }
+		$aa1 = { 00 04 00 00 00 66 00 00 00 0B 00 76 00 00 00 E4 CB 01 00 80 DF 04 00 BC 98 05 00 5C 43 06 00 00 00 8A 16 01 00 00 00 EF 6D 03 00 00 00 47 22 05 00 00 00 61 CB 05 00 01 00 6B 33 03 00 03 00 E9 33 03 00 04 00 14 34 03 00 05 00 8B 34 03 00 06 00 44 35 03 00 01 00 A0 89 05 00 01 00 CF 30 06 00 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 38 DB A8 5F A6 22 79 C0 }
 		//1.4.9
-		$a2 = { F0 D6 02 00 04 00 70 D7 02 00 02 00 70 D8 02 00 01 00 40 DB 02 00 06 00 20 DD 02 }
+		$aa2 = { F0 D6 02 00 04 00 70 D7 02 00 02 00 70 D8 02 00 01 00 40 DB 02 00 06 00 20 DD 02 }
 		//1.4.4
-		$a3 = { 48 00 00 00 A8 00 00 00 ?? 00 00 00 ?? 00 00 00 09 00 00 00 80 41 02 00 40 12 00 00 05 00 00 00 00 00 00 60 ?? ?? 04 00 00 00 00 00 ?? ?? 05 00 00 00 00 00 90 62 02 00 ?? ?? 04 00 00 00 00 00 D4 ?? ?? ?? ?? ?? 01 00 DB 39 E5 95 0B 3B 44 C2 20 8B 2E E4 E4 15 FE 84 ?? C6 }
-	condition:
-		($a0 in (pe.sections[2].raw_data_offset..pe.sections[2].raw_data_offset+0xFF)) or
-		($a1 in (pe.sections[2].raw_data_offset..pe.sections[2].raw_data_offset+0xFF)) or
-		($a2 in (pe.sections[2].raw_data_offset..pe.sections[2].raw_data_offset+0xFF)) or
-		($a3 in (pe.sections[2].raw_data_offset..pe.sections[2].raw_data_offset+0xFF))
+		$aa3 = { 48 00 00 00 A8 00 00 00 ?? 00 00 00 ?? 00 00 00 09 00 00 00 80 41 02 00 40 12 00 00 05 00 00 00 00 00 00 60 ?? ?? 04 00 00 00 00 00 ?? ?? 05 00 00 00 00 00 90 62 02 00 ?? ?? 04 00 00 00 00 00 D4 ?? ?? ?? ?? ?? 01 00 DB 39 E5 95 0B 3B 44 C2 20 8B 2E E4 E4 15 FE 84 ?? C6 }
+		//unknown ver
+		$aa4 = { 00 03 00 00 00 66 00 00 00 05 00 72 00 00 00 E4 CB 01 00 BC 88 02 00 5C 33 03 00 00 00 8A 16 01 00 00 00 47 12 02 00 00 00 61 BB 02 00 01 00 A0 79 02 00 01 00 CF 20 03 00 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 }
+		//wild sig.. unknown ver
+		$aa5 = { 00 0? 00 00 00 66 00 00 00 0? 00 7? 00 00 00 E4 CB 01 00 BC 88 02 00 5C 33 03 00 }
+
+		$bb0 = { 40 C3 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 66 81 38 4D 5A C3 }
+		$bb1 = { 40 C3 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 66 81 38 4D 5A C3 }
+	condition:		
+		for any of ($a*) : ($ in (pe.sections[2].raw_data_offset..pe.sections[2].raw_data_offset+0xFF))
+		or
+		for any of ($bb*) : ($ at pe.sections[1].raw_data_offset)
 }
 
 rule _7_Zip_Installer : Igor Pavlov
