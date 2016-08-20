@@ -71,6 +71,7 @@ rule IsPacked : PECheck
 		math.entropy(0, filesize) > 7.0
 }
 
+
 rule HasOverlay : PECheck
 {
 	meta: 
@@ -81,6 +82,9 @@ rule HasOverlay : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
+		//stupid check if last section is 0		
+		//not (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) == 0x0 and
+
 		(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) < filesize
 }
 
@@ -92,6 +96,7 @@ rule HasTaggantSignature : PECheck
 		date="2016-07"
 	strings:		
 		$a0 = { 54 41 47 47 ?? ?? ?? ?? ?? ?? 00 00 ?? 00 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 02 A0 82 ?? ?? 30 82 ?? ?? 02 01 01 31 09 30 07 06 05 2B 0E 03 02 1A 30 82 ?? ?? 06 09 2A 86 48 86 F7 0D 01 07 01 A0 82 ?? ?? 04 82 ?? ?? ?? 00 01 00 ?? ?? }
+		//$c0 = { 06 09 2A 86 }
 	condition:
 		// MZ signature at offset 0 and ...
 		uint16(0) == 0x5A4D and
@@ -99,6 +104,8 @@ rule HasTaggantSignature : PECheck
 		uint32(uint32(0x3C)) == 0x00004550 and
 		//TAGG+4E==packerid
 		//(uint32be(@a0+0x4E) == 0x0B51D132) and
+		//(uint32be(@a0+0x12) == 0x006092a86) and
+		//(uint32be(@a0+0x12)) == uint32be(@c0) and
 
 		//uint32be(@a0+0x04) < (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) and
 		$a0
@@ -179,6 +186,29 @@ rule ImportTableIsBad : PECheck
 		((uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x84+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))     > (uint32(uint32(0x3C)+0x50)) 
 		or
 		(((uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) )) + (uint32(uint32(0x3C)+0x84+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))))  == 0x0)
+		//or
+
+		//doest work
+		//pe.imports("", "")
+
+		//need to check if this is ok.. 15:06 2016-08-12
+		//uint32( uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))+uint32(uint32(0x3C)+0x34)) == 0x408000
+		//this works.. 
+		//uint32(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))+uint32(uint32(0x3C)+0x34) == 0x408000
+		
+		//uint32be(uint32be(0x409000)) == 0x005A
+		//pe.image_base
+		//correct:
+
+		//uint32(uint32(0x3C)+0x80)+pe.image_base == 0x408000
+
+		//this works (file offset):
+		//$a0 at 0x4000
+		//this does not work rva:
+		//$a0 at uint32(0x0408000)
+
+		//(uint32(uint32(uint32(0x3C)+0x80)+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5))+pe.image_base) == 0x0)
+
 		or
 		//tiny PE files..
 		(uint32(0x3C)+0x80+((uint16(uint32(0x3C)+0x18) & 0x200) >> 5) > filesize)
@@ -187,7 +217,7 @@ rule ImportTableIsBad : PECheck
 		//uint32(uint32(0x3C)+0x80) == 0x21000
    		//uint32(uint32(uint32(0x3C)+0x80)) == 0x0
 		//pe.imports("", "")
-		)		
+		)				
 }
 
 rule ExportTableIsBad : PECheck
@@ -252,9 +282,7 @@ rule IsSuspicious
 		date = "2016-07"
 		description="Might be PE Virus"
 	condition:
-		uint32(0x20) == 0x20202020
-
-		
+		uint32(0x20) == 0x20202020	
 }
 
 
@@ -415,6 +443,7 @@ rule SkDUndetectabler : SkDrat {
 		)
 }
 
+/* usefull ? 18:53 2016-08-12
 rule MicrosoftVisualCV80
 {
       meta:
@@ -425,6 +454,7 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
+*/
 
 rule Cygwin : Red Hat
 {
@@ -463,9 +493,7 @@ rule MinGW
 	condition:
 		(
 		(pe.linker_version.major == 2) and (pe.linker_version.minor == 56 ) or
-		(pe.linker_version.major == 2) and (pe.linker_version.minor == 25 ) or
-		(pe.linker_version.major == 2) and (pe.linker_version.minor == 24 ) or
-		(pe.linker_version.major == 2) and (pe.linker_version.minor == 22 )
+		(pe.linker_version.major == 2) and ((pe.linker_version.minor >= 21) and (pe.linker_version.minor <= 25))
 		)
 		and
 		($a0 and (any of ($aa*) ))
@@ -510,6 +538,36 @@ rule AutoIt
 		5 of ($aa*)
 }
 
+
+rule PellesC : Pelle Orinius
+{
+	meta:
+		author = "_pusher_"
+		date = "2016-08"
+		description = "www.smorgasbordet.com/pellesc"
+	strings:		
+		$aa0 = " -- terminating\x0D\x0A\x00 -- terminating\x0A\x00CRT: \x00unexpected error\x00" wide ascii nocase	
+		$aa1 = "unhandled exception (main)\x00unhandled exception in thread\x00unable to create thread\x00unable to destroy semaphore\x00" wide ascii nocase
+		$aa2 = "unable to wait on semaphore\x00unable to post semaphore\x00unable to init semaphore\x00unable to unlock mutex\x00unable to lock mutex\x00unable to init mutex\x00" wide ascii nocase
+		$aa3 = "invalid stream lock number\x00corrupt per-thread data\x00out of memory\x00unable to init threads\x00unable to init HEAP" wide ascii nocase
+	condition:
+		3 of ($aa*) and
+		(pe.linker_version.major == 2) and (pe.linker_version.minor == 50 )
+}
+
+rule QtFrameWork
+{
+      	meta:
+		author="_pusher_"
+		date="2016-08"
+	strings:
+		$aa0 = "\x00Qt5Core.dll\x00" ascii
+		$aa1 = "\x00QtCore4.dll\x00" ascii
+	condition:
+		(any of ($aa*) )
+}
+
+/* usefull ? 18:32 2016-08-10
 rule masm32_tasm32
 {
 	meta:
@@ -522,3 +580,4 @@ rule masm32_tasm32
 	condition:
 		$a0
 }
+*/
