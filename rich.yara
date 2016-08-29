@@ -12,6 +12,7 @@ rule MASM
 		pe.rich_signature.version(8078) and pe.rich_signature.version(30319) and pe.rich_signature.toolid(19) and (pe.linker_version.major == 5) and (pe.linker_version.minor == 12 ) or
 		pe.rich_signature.version(1735) and pe.rich_signature.version(8803) and pe.rich_signature.toolid(6) or
 		pe.rich_signature.version(1735) and pe.rich_signature.version(8444) and pe.rich_signature.toolid(6) or
+		pe.rich_signature.version(1735) and pe.rich_signature.version(8078) and pe.rich_signature.toolid(19) or
 		pe.rich_signature.version(8444) and pe.rich_signature.toolid(18) and ((pe.linker_version.major == 5) and (pe.linker_version.minor == 12 )) or
 		pe.rich_signature.version(7274) and pe.rich_signature.version(9049) and pe.rich_signature.toolid(19)
 }
@@ -69,6 +70,7 @@ rule MSVC2003
 		linker = "7.10"
 	condition:										//change 100 to something
 		pe.rich_signature.version(4035) and pe.rich_signature.version(50727) and pe.rich_signature.toolid(100) or
+		pe.rich_signature.version(3052) and pe.rich_signature.version(9210) and pe.rich_signature.toolid(95) or
 		pe.rich_signature.version(6030) and pe.rich_signature.version(2179) and pe.rich_signature.toolid(100) or
 		pe.rich_signature.version(3077) and pe.rich_signature.version(2179) and (pe.rich_signature.toolid(95) or pe.rich_signature.toolid(96) ) or
 		pe.rich_signature.version(4035) and pe.rich_signature.version(4031) and pe.rich_signature.toolid(95)
@@ -144,6 +146,8 @@ rule MSVC2013
 		pe.rich_signature.version(21005) and ( pe.rich_signature.version(40629) or pe.rich_signature.version(31101) or pe.rich_signature.version(30723) or pe.rich_signature.version(41118) ) and (pe.rich_signature.toolid(221) or pe.rich_signature.toolid(224) ) or
 		pe.rich_signature.version(31101) and pe.rich_signature.version(20806) and (pe.rich_signature.toolid(221) or pe.rich_signature.toolid(225)) or
 		pe.rich_signature.version(20806) and pe.rich_signature.version(21005) and pe.rich_signature.toolid(224) or
+		//
+		//pe.rich_signature.version(31101) and pe.rich_signature.toolid(229) or
 		pe.rich_signature.version(65501) and pe.rich_signature.version(20806) and pe.rich_signature.toolid(224)
 }
 
@@ -180,5 +184,6 @@ rule MSVB6
 		date = "2016-08"
 		linker = "6.00"
 	condition:
-		pe.rich_signature.version(8041) and pe.rich_signature.version(8169) and pe.rich_signature.toolid(9)
+		pe.rich_signature.version(8041) and pe.rich_signature.version(8169) and pe.rich_signature.toolid(9) or
+		pe.rich_signature.version(8169) and pe.rich_signature.toolid(13)
 }
