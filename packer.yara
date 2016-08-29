@@ -4,6 +4,7 @@
 */
 
 import "pe"
+import "math"
 
 /*
 rule RegExp1
@@ -20400,6 +20401,8 @@ rule Upack_all_versions : Dwing
 		$a3 = { 8B 5E 28 56 52 8B 76 2C 46 AD 85 C0 5A 74 22 03 C2 52 56 97 FF 53 FC 95 AC 84 C0 75 FB 38 06 74 E7 8B C6 79 05 46 33 C0 66 AD 50 55 FF 13 AB EB E7 59 5F 8B 49 44 E3 0D 33 C0 AC 3C 04 72 0C 03 F8 01 17 E2 F3 61 E9 }
 	condition:
 		(
+		((pe.linker_version.major == 0) and (pe.linker_version.minor == 01 )) or //0.1
+
 		((pe.linker_version.major == 0) and (pe.linker_version.minor == 41 )) or //0.29
 		((pe.linker_version.major == 0) and (pe.linker_version.minor == 48 )) or //0.30
 		((pe.linker_version.major == 0) and (pe.linker_version.minor == 50 )) or //0.32
@@ -21239,13 +21242,25 @@ rule VMProtectSDK : VMProtect Software
 		author="_pusher_"
 		date = "2016-08"
 	strings:
-		//wild check for weirdo obfuscate
 		$aa0 = { 9C 9C 9C 8D 64 24 ?? E9 }
-		$aa1 = { 9C 9C 9C 8F 44 24 ?? E9 }
-		$aa2 = { 9C 9C 9C 79 2F 2F 2F FF 2F }
-		$aa3 = { 9C 9C 9C F2 72 28 DA EA }
+		$aa1 = { 9C 9C 9C ( 8F | 89 | C7 ) ( 44 | 4C | 6C ) 24 ?? ( E9 | E8 | 68 | 88 | C6 | 60 | 6E  | FF ) }
+		$aa2 = { 9C 9C F3 9C 8F 44 24 ?? E8 }
+		$aa3 = { 9C 9C 9C FF 74 24 ?? ( 8D | 8F ) }
+		$aa4 = { 9C 9C 88 44 24 ?? 8B }
+		$aa5 = { 9C 9C 8D 64 24 ?? ( E9 | 0F ) }
+		$aa6 = { 9C 9C 9C E8 ?? ?? 00 00 }
+		$aa7 = { 9C 9C 9C 68 ?? ?? ?? ?? 89 }
+		//vmp x64
+		$aa8 = { E9 ?? ?? ( 00 00 | FF FF ) ( 9C | F3 9C ) E9 ?? ?? ( 00 00 | FF FF ) ( E9 ?? ?? 00 00 | (56 | 57) ) }
 	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and
 		any of ($aa*)
+		
+		
+		
 		
 }
 
