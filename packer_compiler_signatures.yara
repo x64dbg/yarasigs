@@ -68,7 +68,7 @@ rule IsPacked : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint32(uint32(0x3C)) == 0x00004550 and
-		math.entropy(0, filesize) > 7.0
+		math.entropy(0, filesize) >= 7.0
 }
 
 
@@ -86,6 +86,7 @@ rule HasOverlay : PECheck
 		//not (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) == 0x0 and
 
 		(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) < filesize
+		
 }
 
 rule HasTaggantSignature : PECheck
@@ -274,7 +275,6 @@ rule HasRichSignature : PECheck
 		(for any of ($a*) : ($ in (0x0..uint32(0x3c) )))
 }
 
-
 rule IsSuspicious
 {
 	meta:
@@ -283,6 +283,22 @@ rule IsSuspicious
 		description="Might be PE Virus"
 	condition:
 		uint32(0x20) == 0x20202020	
+}
+
+rule IsGoLink
+{
+	meta:
+		author="_pusher_"
+		date = "2016-08"
+		description="www.GoDevTool.com"
+	strings:
+		$a0 = { 47 6F 4C 69 6E 6B }
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		$a0 at 0x40
+
 }
 
 
