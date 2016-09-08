@@ -12,6 +12,7 @@ rule MASM
 		pe.rich_signature.version(8078) and pe.rich_signature.version(30319) and pe.rich_signature.toolid(19) and (pe.linker_version.major == 5) and (pe.linker_version.minor == 12 ) or
 		pe.rich_signature.version(1735) and pe.rich_signature.version(8803) and pe.rich_signature.toolid(6) or
 		pe.rich_signature.version(1735) and pe.rich_signature.version(8444) and pe.rich_signature.toolid(6) or
+		pe.rich_signature.version(1735) and pe.rich_signature.version(8447) and pe.rich_signature.toolid(6) or
 		pe.rich_signature.version(1735) and pe.rich_signature.version(8078) and pe.rich_signature.toolid(19) or
 		pe.rich_signature.version(8444) and pe.rich_signature.toolid(18) and ((pe.linker_version.major == 5) and (pe.linker_version.minor == 12 )) or
 		pe.rich_signature.version(7274) and pe.rich_signature.version(9049) and pe.rich_signature.toolid(19)
@@ -35,6 +36,7 @@ rule MSVC6
 		date = "2016-08"
 		linker = "6.00"
 	condition:
+		pe.rich_signature.version(8447) and pe.rich_signature.version(7299) and pe.rich_signature.toolid(10) or
 		pe.rich_signature.version(9782) and pe.rich_signature.version(7299) and pe.rich_signature.toolid(10) or
 		pe.rich_signature.version(8168) and pe.rich_signature.version(1720) and pe.rich_signature.toolid(10) or
 		pe.rich_signature.version(8168) and pe.rich_signature.version(7299) and pe.rich_signature.toolid(10) 
