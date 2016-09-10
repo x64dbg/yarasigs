@@ -6,3 +6,4 @@ Please be so kind to use TABS when formatting your signatures, thanks.
 
 #Yara-GUI
 Window GUI tool with drag and drop interface and directory scanning with multible scripts [Yara GUI](http://sigint9.github.io/yaragui/)
+http://sigint9.github.io/yaragui/yaragui.png
