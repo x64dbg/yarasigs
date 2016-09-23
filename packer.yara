@@ -2900,6 +2900,17 @@ rule BriefLzSig
 		($a0)
 }
 
+rule Cabinet_Archive : Microsoft
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+	strings:
+		$a0 = { 4D 53 43 46 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 ?? 00 00 00 00 00 00 00 03 01 01 00 ?? 00 ?? 00 ?? ?? 00 00 ?? ?? 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 }
+	condition:
+		any of ($a*)
+}
+
 
 rule CDCopsII
 {
@@ -7517,6 +7528,18 @@ rule InstallAnywhere : ZeroG Software Inc
 		(uint16be(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size+0x404) == 0x504B)
 }
 
+rule InstallShield_Cabinet_Archive : InstallShield
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+		description = "www.flexerasoftware.com"
+	strings:
+		$a0 = { 49 53 63 28 ?? ?? 00 ?? 00 ?? 00 00 00 02 00 00 ?? ?? 00 00 ?? ?? ?? 00 00 00 00 00 ?? 00 00 00 ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 }
+	condition:
+		$a0
+}
+
 rule  InstallShieldInstaller
 {
 	meta:
@@ -8157,12 +8180,12 @@ rule LZMA
 {
 		meta:
 		author="_pusher_"
-		date = "2016-07"
+		date = "2016-09"
 	strings: 
 		$a0 = { E9 B2 08 00 00 55 8B EC 83 EC 3C 8B 45 08 8B 48 0C 53 56 33 F6 46 89 4D EC 8B 48 08 8B DE D3 E3 8B 48 04 8B D6 D3 E2 8B }
 		$a1 = { E9 F7 07 00 00 55 8B EC 83 EC 34 8B 45 08 8B 48 08 83 65 F0 00 83 65 F8 00 33 D2 42 53 56 8B 70 0C 57 8B DA D3 E3 8B 48 }
 		$a2 = { 55 8B EC 83 EC 30 33 C0 40 8B 7D 10 89 45 EC 89 45 E4 89 45 E8 89 45 D8 B8 00 04 00 00 33 D2 B9 36 07 03 00 F3 AB 8B 45 0C 6A 05 89 45 F8 89 55 F0 88 55 FF 89 55 F4 89 55 0C 83 C8 FF 59 8B 75 F8 8B 55 0C 0F B6 36 C1 E2 08 0B D6 FF 45 F8 49 89 55 0C 75 E9 8B 75 F0 8B 4D F4 8B 55 10 83 E6 03 C1 E1 04 03 CE 3D 00 00 00 01 8D 3C 8A 73 17 8B 55 F8 8B 4D 0C 0F B6 12 C1 E1 08 0B CA C1 E0 08 FF 45 F8 89 4D 0C 8B 0F 8B D8 C1 EB 0B 0F AF D9 39 5D 0C 0F 83 6A 01 00 00 BE 00 08 00 00 2B F1 C1 EE 05 03 F1 0F B6 4D FF 69 C9 00 0C 00 00 33 D2 89 37 8B 75 10 42 83 7D F4 07 8D 8C 0E D8 1C 00 00 8B C3 89 4D E0 0F 8C 9F 00 00 00 8B 4D F0 2B 4D EC 8B 75 08 0F B6 0C 0E 89 4D DC D1 65 DC 8B 75 DC 8B 7D E0 81 E6 00 01 00 00 3D 00 00 00 01 8D 0C 32 8D 8C 8F 00 04 00 00 89 4D D4 73 17 8B 5D F8 8B 7D 0C 0F B6 1B C1 E7 08 }
-		$a3 = { 55 57 56 53 83 EC 7C 8B 94 24 90 00 00 00 C7 44 24 74 00 00 00 00 C6 44 24 73 00 8B AC 24 9C 00 00 00 8D 42 04 89 44 24 78 B8 01 00 00 00 0F B6 4A 02 89 C3 D3 E3 89 D9 49 89 4C 24 6C 0F B6 4A 01 D3 E0 48 89 44 24 68 8B 84 24 A8 00 00 00 0F B6 32 C7 45 00 00 00 00 00 C7 44 24 60 00 00 00 00 C7 00 00 00 00 00 B8 00 03 00 00 89 74 24 64 C7 44 24 5C 01 00 00 00 C7 44 24 58 01 00 00 00 C7 44 24 54 01 00 00 00 C7 44 24 50 01 00 00 00 0F B6 4A 01 01 F1 D3 E0 8D 88 36 07 00 00 39 4C 24 74 73 0E 8B 44 24 78 66 C7 00 00 04 83 C0 02 E2 F6 }
+		$a3 = { 55 57 56 53 83 EC 7C 8B 94 24 90 00 00 00 C7 44 24 74 00 00 00 00 C6 44 24 73 00 8B AC 24 9C 00 00 00 8D 42 04 89 44 24 78 B8 01 00 00 00 0F B6 4A 02 ?? ?? D3 E3 ?? ?? 49 89 4C 24 6C 0F B6 4A 01 D3 E0 48 89 44 24 68 8B 84 24 A8 00 00 00 0F B6 32 C7 45 00 00 00 00 00 C7 44 24 60 00 00 00 00 C7 00 00 00 00 00 B8 00 03 00 00 89 74 24 64 C7 44 24 5C 01 00 00 00 C7 44 24 58 01 00 00 00 C7 44 24 54 01 00 00 00 C7 44 24 50 01 00 00 00 0F B6 4A 01 ?? ?? D3 E0 8D 88 36 07 00 00 39 4C 24 74 73 0E 8B 44 24 78 66 C7 00 00 04 83 C0 02 E2 F6 }
 	condition:
 		any of them
 }
@@ -8718,6 +8741,18 @@ rule mpress_077_x86 : Matcode
 		$a0 at pe.entry_point and $a1 at 0
 }
 
+rule mpress_107_x64 : Matcode
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+	strings:
+		$a0 = { 57 56 53 51 52 41 50 48 8D 05 6F 03 00 00 48 8B 30 48 03 F0 48 2B C0 48 8B FE 66 AD C1 E0 0C 48 8B C8 50 AD 2B C8 48 03 F1 8B C8 57 44 8B C1 FF C9 8A 44 39 06 88 04 31 }
+		$a1 = { 4D 5A 40 00 01 00 00 00 02 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0E 1F BA 0E 00 B4 09 CD 21 B8 01 4C CD 21 57 69 6E 36 34 20 2E 45 58 45 2E 0D 0A 24 40 00 00 00 }
+	condition:
+		$a0 at pe.entry_point and $a1 at 0
+}
+
 rule mpress_127_x86 : Matcode
 {
 	meta:
@@ -8748,16 +8783,14 @@ rule mpress_2_xx_net : Matcode
 rule mpress_2_xx_x64 : Matcode
 {
 	meta:
-		author="Kevin Falcoz"
+		author="Kevin Falcoz / _pusher_"
 		date_create="19/03/2013"
-		last_edit="24/03/2013"
+		last_edit="10/09/2016"
 		description="MPRESS v2.XX x64  - no .NET"
-	
 	strings:
-		$signature1={57 56 53 51 52 41 50 48 8D 05 DE 0A 00 00 48 8B 30 48 03 F0 48 2B C0 48 8B FE 66 AD C1 E0 0C 48 8B C8 50 AD 2B C8 48 03 F1 8B C8 57 44 8B C1 FF C9 8A 44 39 06 88 04 31} 
-		
+		$a0 = { 57 56 53 51 52 41 50 48 8D 05 ?? ?? 00 00 48 8B 30 48 03 F0 48 2B C0 48 8B FE 66 AD C1 E0 0C 48 8B C8 50 AD 2B C8 48 03 F1 8B C8 57 44 8B C1 FF C9 8A 44 39 06 88 04 31 }
 	condition:
-		$signature1 at pe.entry_point
+		$a0 at pe.entry_point
 }
 
 
@@ -9399,8 +9432,24 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
-	
+
+rule Nalpeiron_License_Manager
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+		description = "www.nalpeiron.com"
+	condition:
+		(
+		pe.exports("NSAAppStart") and pe.exports("NSAAppStop") and pe.exports("NSLGetComputerID") 
+		and ( pe.exports("NSLGetLicenseStatus") or pe.exports("NSLGetFeatureStatus") )
+		) or
+		(
+		pe.exports("CheckLicense") and pe.exports("CheckFlags") and pe.exports("InternetActivate")
+		and pe.exports("ReturnLicense") and pe.exports("ReturnVersion")
+		)
+}
+
 
 rule nBinderv361
 {
@@ -9646,6 +9695,7 @@ rule DotNET_SmartAssembly : RedGate
 		date="2016-07"
 	strings:	
 		$a0 = { 50 6F 77 65 72 65 64 20 62 79 20 53 6D 61 72 74 41 73 73 65 6D 62 6C 79 20 }
+		$a1 = { 50 6F 77 65 72 65 64 20 62 79 20 7B 73 6D 61 72 74 61 73 73 65 6D 62 6C 79 7D }
 	condition:
 		(pe.imports ("mscoree.dll","_CorExeMain") or pe.imports ("mscoree.dll","_CorDllMain")) and 1 of ($a*)
 }
@@ -13679,7 +13729,20 @@ strings:
 condition:
 		$a0 at pe.entry_point
 }
-	
+
+
+rule PEtite24 : Ian Luck
+{
+	meta:
+		author = "_pusher_"
+		date = "2016-09"
+		description = "www.un4seen.com/petite/"
+	strings:
+		$a0 = { B8 ?? ?? ?? ?? 60 8D A8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 6A 40 68 00 30 00 00 68 ?? ?? ?? ?? 6A 00 FF 90 ?? ?? ?? ?? 89 44 24 1C BB ?? ?? ?? ?? 8D B5 ?? ?? ?? ?? 8B F8 50 E8 0A 00 00 00 74 07 8B 44 24 24 FF 50 10 C3 }
+	condition:
+		$a0 at pe.entry_point
+}
+
 	
 
 rule PeX099bartCrackPl
@@ -15916,18 +15979,6 @@ condition:
 		$a0
 }
 
-rule  PyInstaller : wwwpyinstallerorg
-{
-	meta:
-		author="_pusher_"
-		date = "2015-12"
-		description = "Installer"
-	strings:
-		$a0 = { 50 59 5A 00 }
-	condition:
-		$a0 at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size)
-}
-
 rule QrYPt0rbyNuTraL
 {
 	meta:
@@ -17239,8 +17290,22 @@ strings:
 condition:
 		$a0
 }
-	
-	
+
+rule SetupFactory : Indigo Rose Corperation
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+		description = "Installer"
+	strings:
+		$a0 = { E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 00 01 02 03 04 05 }
+	condition:
+		//pe.overlay would be nice ;)
+		$a0 at (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) and
+		(pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size > 0x500)
+		
+
+}	
 
 rule SetupFactoryv6003SetupLauncher
 {
@@ -20523,7 +20588,7 @@ rule UPX_OEP_place
 		$a9 = { 74 3C 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB E1 61 31 C0 C2 0C 00 83 C7 04 8D 5E FC 31 C0 8A 07 47 09 C0 74 22 3C EF 77 11 01 C3 8B 03 86 C4 C1 C0 10 86 C4 01 F0 89 03 EB E2 24 0F C1 E0 10 66 8B 07 83 C7 02 EB E2 61 E9 }
 		//3.03 .. 3.09
 		$a6 = { 74 22 3C EF 77 11 01 C3 8B 03 86 C4 C1 C0 10 86 C4 01 F0 89 03 EB E2 24 0F C1 E0 10 66 8B 07 83 C7 02 EB E2 8B AE ?? ?? ?? ?? 8D BE 00 F0 FF FF BB 00 10 00 00 50 54 6A 04 53 57 FF D5 8D ?? ?? ?? ?? ?? 80 20 7F 80 60 28 7F 58 50 54 50 53 57 FF D5 58 61 8D 44 24 80 6A 00 39 C4 75 FA 83 EC 80 E9 }
-		$a7 = { 74 DC 89 F9 57 48 F2 AE 55 FF 96 98 12 FC 02 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 A8 12 FC 02 8B AE ?? ?? ?? ?? 8D BE 00 F0 FF FF BB 00 10 00 00 50 54 6A 04 53 57 FF D5 8D ?? ?? ?? ?? ?? 80 20 7F 80 60 28 7F 58 50 54 50 53 57 FF D5 58 61 8D 44 24 80 6A 00 39 C4 75 FA 83 EC 80 E9 }
+		$a7 = { 74 DC 89 F9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 ?? ?? ?? ?? 8B AE ?? ?? ?? ?? 8D BE 00 F0 FF FF BB 00 10 00 00 50 54 6A 04 53 57 FF D5 8D ?? ?? ?? ?? ?? 80 20 7F 80 60 28 7F 58 50 54 50 53 57 FF D5 58 61 8D 44 24 80 6A 00 39 C4 75 FA 83 EC 80 E9 }
 		//older upx 0.76 - 0.84
 		$a3 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 8D BE ?? ?? ?? ?? 8B 07 09 C0 74 45 8B 5F 04 8D 84 30 ?? ?? ?? ?? 01 F3 50 83 C7 08 FF 96 ?? ?? ?? ?? 95 8A 07 47 08 C0 74 DC 89 F9 79 07 0F B7 07 47 50 47 B9 57 48 F2 AE 55 FF 96 ?? ?? ?? ?? 09 C0 74 07 89 03 83 C3 04 EB D8 FF 96 ?? ?? ?? ?? 61 E9 }
 		$a4 = { 75 F2 8B 07 8A 5F 04 66 C1 E8 08 C1 C0 10 86 C4 29 F8 80 EB E8 01 F0 89 07 83 C7 05 ?? D8 E2 D9 8D BE 00 60 00 00 8B 07 09 C0 74 3C 8B 5F 04 8D 84 30 10 85 00 00 01 F3 50 83 C7 08 FF 96 4C 85 00 00 95 8A 07 47 08 C0 74 DC 89 F9 57 48 F2 AE 55 FF 96 50 85 00 00 09 C0 74 07 89 03 83 C3 04 EB E1 FF 96 54 85 00 00 61 E9 }
@@ -22526,26 +22591,32 @@ condition:
 		$a0 at pe.entry_point
 }
 	
-rule winrar_sfx_pusher : WinRAR SFX
+rule RAR_Archive : RarLab
 {
 	meta:
 		author="_pusher_"
-		date = "2015-11"
+		date = "2016-09"
 	strings:
-		$a0 = { 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 57 49 4E 52 41 52 2E 53 46 58 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 } 		
-		$a1 = "RarSFX" wide ascii nocase
-		$a2 = "GETPASSWORD1" wide ascii nocase
+		//RAR
+		$a0 = { 52 61 72 21 1A 07 (00 | 01) ?? ?? 73 ?? 00 0D 00 00 00 00 00 00 00 }
+		//RAR5
+		$a1 = { 52 61 72 21 1A 07 01 00 ?? ?? ?? ?? ?? 01 05 ?? 00 ?? 01 01 }
+		//$a1 = "RarSFX" wide ascii nocase
+		//$a2 = "GETPASSWORD1" wide ascii nocase
 	condition:
-		$a0 or
+		//$a0 or
 		(
-		$a1 and $a2 and
-		uint32be( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) ) == 0x52617221
+		any of ($a*)
+		//$a0 
+		//and $a1 and $a2 
+		//and
+		//uint32be( (pe.sections[pe.number_of_sections-1].raw_data_offset+pe.sections[pe.number_of_sections-1].raw_data_size) ) == 0x52617221
 		)
 		
 
 }	
 
-rule winrar_sfx : Packer
+rule winrar_sfx_Kevin : Packer
 {
 	meta:
 		author="Kevin Falcoz"
@@ -22891,6 +22962,17 @@ strings:
 
 condition:
 		$a0 at pe.entry_point
+}
+
+rule XM_Song
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+	strings:	
+		$a0 = { 45 78 74 65 6E 64 65 64 20 4D 6F 64 75 6C 65 3A ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 1A ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 04 01 14 01 00 00 ?? 00 ?? 00 ?? 00 ?? 00 ?? 00 ?? 00 ?? 00 ?? 00 }
+	condition:
+		$a0
 }
 
 rule XPack152164
@@ -23330,6 +23412,18 @@ rule ZipMaster_ZipSFX
 		$a3 = "Windows" wide ascii nocase
 	condition:
 		all of them
+}
+
+rule Zip_Archive
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+		description = "ZIP Archive"
+	strings:
+		$a0 = { 50 4B 03 04 14 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 ?? ?? ?? ?? ?? 00 00 00 }
+	condition:
+		$a0
 }
 
 rule ZipWorxSecureEXEv25ZipWORXTechnologiesLLC
