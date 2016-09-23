@@ -436,7 +436,7 @@ rule SkDUndetectabler : SkDrat {
 		author = "_pusher_"
 	condition:
 		(
-		borland_delphi or //check All FSG or
+		borland_delphi or (pe.timestamp == 0x21475346) or //check All FSG or
 		((pe.linker_version.major == 6) and (pe.linker_version.minor == 0 ))
 		)
 		and
@@ -495,9 +495,11 @@ rule MinGW
 {
 	meta:
 		author = "_pusher_"
-		date = "2016-07"
+		date = "2016-09"
 	strings:		
 		$a0 = "msvcrt.dll" ascii nocase
+		$a1 = "msvcr100.dll" ascii nocase
+
 		$aa1 = "Mingw-w64 runtime failure:"
 		$aa3 = "_mingw32_init_mainargs"
 		//too wild ?
@@ -513,7 +515,7 @@ rule MinGW
 		(pe.linker_version.major == 2) and ((pe.linker_version.minor >= 21) and (pe.linker_version.minor <= 25))
 		)
 		and
-		($a0 and (any of ($aa*) ))
+		( ($a0 or $a1) and (any of ($aa*) ))
 }
 
 rule FASM : flat assembler {
@@ -570,6 +572,24 @@ rule PellesC : Pelle Orinius
 	condition:
 		3 of ($aa*) and
 		(pe.linker_version.major == 2) and (pe.linker_version.minor == 50 )
+}
+
+rule  PyInstaller
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+		description = "www.pyinstaller.org"
+	strings:
+		$a0 = { 4D 45 49 0C 0B 0A 0B 0E ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 70 79 74 68 6F 6E }
+		$aa0 = "Py_SetProgramName" ascii
+		$aa1 = "Py_SetPythonHome" ascii
+		$aa2 = "Py_Initialize" ascii
+		$aa3 = "Py_Finalize" ascii
+		$aa4 = "PyImport_ImportModule" ascii
+	condition:
+		$a0 and
+		all of ($aa*)
 }
 
 rule QtFrameWork
