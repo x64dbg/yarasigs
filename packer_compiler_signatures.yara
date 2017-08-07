@@ -10,6 +10,14 @@ rule IsPE32 : PECheck
 		uint16(uint32(0x3C)+0x18) == 0x010B
 }
 
+rule IsELF32 : ELFCheck
+{
+	condition:
+		// ELF signature at offset 0 and ...
+		uint32(0) == 0x464C457F and
+		uint8(0x4) == 0x01
+}
+
 rule IsPE64 : PECheck
 {
 	condition:
@@ -17,6 +25,14 @@ rule IsPE64 : PECheck
 		uint16(0) == 0x5A4D and
 		// ... PE signature at offset stored in MZ header at 0x3C
 		uint16(uint32(0x3C)+0x18) == 0x020B
+}
+
+rule IsELF64 : ELFCheck
+{
+	condition:
+		// ELF signature at offset 0 and ...
+		uint32(0) == 0x464C457F and
+		uint8(0x4) == 0x02
 }
 
 rule IsNET_EXE : PECheck
@@ -59,16 +75,38 @@ rule IsWindowsGUI : PECheck
 		uint16(uint32(0x3C)+0x5C) == 0x0002
 }
 
-rule IsPacked : PECheck
+rule IsPacked : PE ELF Check
 {
 	meta: 
-		description = "Entropy Check"
+		author="_pusher_"
+		description = "PE & ELF Entropy Check"
+		date = "2017.05"
+		version = "2.0"
 	condition:
 		// MZ signature at offset 0 and ...
-		uint16(0) == 0x5A4D and
-		// ... PE signature at offset stored in MZ header at 0x3C
-		uint32(uint32(0x3C)) == 0x00004550 and
-		math.entropy(0, filesize) >= 7.0
+		((IsPE32 or IsPE64) or (IsELF32 or IsELF64)) and 
+		math.entropy(0, filesize-pe.overlay.size) >= 7.0
+}
+
+rule IsNotPacked : PE ELF Check
+{
+	meta: 
+		author="_pusher_"
+		description = "PE & ELF Entropy Check"
+		date = "2017.05"
+		version = "1.0"
+	condition:
+		// MZ signature at offset 0 and ...
+		((IsPE32 or IsPE64) or (IsELF32 or IsELF64)) and 
+		math.entropy(0, filesize-pe.overlay.size) < 7.0
+}
+
+rule IsResourceLess : PECheck
+{
+	meta: 
+		description = "PE File has no resources"
+	condition:
+		(IsPE32 or IsPE64) and (pe.number_of_resources == 0)
 }
 
 
@@ -275,6 +313,25 @@ rule HasRichSignature : PECheck
 		(for any of ($a*) : ($ in (0x0..uint32(0x3c) )))
 }
 
+rule NeedsAdminAccess : PECheck
+{
+	meta: 
+		author = "_pusher_"
+		description = "AdminAccess Signature Check"
+		date="2017-05"
+	strings:
+		//weirdo yara bug
+		$a0 = "requestedExecutionLevel" fullword ascii nocase	
+		$a1 = "level=\"requireAdministrator" fullword ascii nocase
+		$a2 = "level=\"highestAvailable" fullword ascii nocase
+	condition:
+		// MZ signature at offset 0 and ...
+		uint16(0) == 0x5A4D and
+		// ... PE signature at offset stored in MZ header at 0x3C
+		uint32(uint32(0x3C)) == 0x00004550 and 
+		$a0 and ($a1 or $a2)
+}
+
 rule IsSuspicious
 {
 	meta:
@@ -345,8 +402,8 @@ rule borland_delphi {
 		and
 		(
 		//if its not linker 2.25 its been modified (unpacked usually)
-												//unknown x64 build of delphi
-		((pe.linker_version.major == 2) and (pe.linker_version.minor == 25 )) or ((pe.linker_version.major == 8) and (pe.linker_version.minor == 0 ))
+												//unknown x64 build of delphi							//weird
+		((pe.linker_version.major == 2) and (pe.linker_version.minor == 25 )) or ((pe.linker_version.major == 8) and (pe.linker_version.minor == 0 )) or ((pe.linker_version.major == 5) and (pe.linker_version.minor == 12 ))
 		//unpacked files usually have this linker:
 		or ((pe.linker_version.major == 0) and (pe.linker_version.minor == 0 )) )
 		//could check for dvclal.. maybe too much
@@ -591,6 +648,23 @@ rule  PyInstaller
 		$a0 and
 		all of ($aa*)
 }
+
+
+rule  GoLang : Google
+{
+	meta:
+		author="_pusher_"
+		date = "2016-09"
+		description = "www.golang.org"
+	strings:
+		//x64
+		$a0 = { 48 C7 83 00 00 00 00 23 01 00 00 48 8B 05 ?? ?? ?? ?? 48 3D 23 01 00 00 74 07 89 04 25 00 00 00 00 65 48 8B 1C 25 28 00 00 00 48 8D 0D ?? ?? ?? ?? 48 89 8B 00 00 00 00 48 8D 05 ?? ?? ?? ?? 48 89 08 48 89 41 30 FC E8 ?? ?? ?? ?? 8B 44 24 10 89 04 24 48 8B 44 24 18 48 89 44 24 08 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 50 6A 00 E8 ?? ?? ?? ?? 58 58 E8 }
+		//x86
+		$a1 = { C7 83 00 00 00 00 23 01 00 00 8B 05 ?? ?? ?? ?? 3D 23 01 00 00 74 06 89 05 00 00 00 00 64 8B 1D 14 00 00 00 8D 15 ?? ?? ?? ?? 89 93 00 00 00 00 8D 05 ?? ?? ?? ?? 89 10 89 42 18 E8 ?? ?? ?? ?? FC E8 ?? ?? ?? ?? 8B 44 24 78 89 04 24 8B 44 24 7C 89 44 24 04 E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 6A 00 E8 ?? ?? ?? ?? 58 58 E8 }
+	condition:
+		$a0 or $a1
+}
+
 
 rule QtFrameWork
 {
