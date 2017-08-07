@@ -8,18 +8,26 @@ rule MASM
 		linker = "5.12"
 		//drop linker checks and allow collissions ? :\
 	condition:
-		pe.rich_signature.version(8078) and pe.rich_signature.version(8444) and pe.rich_signature.toolid(19) 
+		(pe.rich_signature.version(8078) and pe.rich_signature.version(8444) and pe.rich_signature.toolid(19) )
 		or //and ((pe.linker_version.major == 5) and (pe.linker_version.minor == 12 ) or (pe.linker_version.major == 12) and (pe.linker_version.minor == 0 ) ) or
-		pe.rich_signature.version(8078) and pe.rich_signature.version(30319) and pe.rich_signature.toolid(19) 
+		(pe.rich_signature.version(8078) and pe.rich_signature.version(30319) and pe.rich_signature.toolid(19) ) 
 		or //and (pe.linker_version.major == 5) and (pe.linker_version.minor == 12 ) or
-		pe.rich_signature.version(1735) and pe.rich_signature.version(8803) and pe.rich_signature.toolid(6) or
-		pe.rich_signature.version(1735) and pe.rich_signature.version(8444) and pe.rich_signature.toolid(6) or
-		pe.rich_signature.version(1735) and pe.rich_signature.version(8447) and pe.rich_signature.toolid(6) and not (pe.rich_signature.version(8168) or pe.rich_signature.version(9782))
+		(pe.rich_signature.version(1735) and pe.rich_signature.version(8803) and pe.rich_signature.toolid(6) )
+		or
+		(pe.rich_signature.version(1735) and pe.rich_signature.version(8444) and pe.rich_signature.toolid(6) and not pe.rich_signature.version(9782) )
+		
+		or
+		pe.rich_signature.version(1735) and pe.rich_signature.version(8447) and pe.rich_signature.toolid(6) and not ( (pe.rich_signature.version(8168) and not pe.rich_signature.version(9782) ))
+
 		or //and (pe.linker_version.major == 5) and (pe.linker_version.minor == 12 ) or
-		pe.rich_signature.version(1735) and pe.rich_signature.version(8078) and pe.rich_signature.toolid(19) or
-		pe.rich_signature.version(8444) and pe.rich_signature.toolid(18) and not pe.rich_signature.version(30319)
-		or //and ((pe.linker_version.major == 5) and (pe.linker_version.minor == 12 )) or
-		pe.rich_signature.version(7274) and pe.rich_signature.version(9049) and pe.rich_signature.toolid(19)
+		(pe.rich_signature.version(1735) and pe.rich_signature.version(8078) and pe.rich_signature.toolid(19) )
+		or
+		//this one causes trouble: //does not with 9782 check
+		(pe.rich_signature.version(8444) and pe.rich_signature.toolid(18) and not pe.rich_signature.version(30319) and not pe.rich_signature.version(9782) )
+
+		//or //and ((pe.linker_version.major == 5) and (pe.linker_version.minor == 12 )) 
+		or
+		(pe.rich_signature.version(7274) and pe.rich_signature.version(9049) and pe.rich_signature.toolid(19) )
 }
 
 rule MSVC5
@@ -94,8 +102,12 @@ rule MSVC2005
 	condition:
 		pe.rich_signature.version(40310) and (pe.rich_signature.version(21022) or pe.rich_signature.version(30729)) and pe.rich_signature.toolid(124) or
 		pe.rich_signature.version(3094) and pe.rich_signature.version(50736) and pe.rich_signature.toolid(113) or
-		pe.rich_signature.version(40310) and pe.rich_signature.version(4035) and pe.rich_signature.toolid(125) or
-		(pe.rich_signature.version(50727) and ((pe.linker_version.major == 8) and (pe.linker_version.minor == 0 )))
+		pe.rich_signature.version(40310) and pe.rich_signature.version(4035) and pe.rich_signature.toolid(125) 
+		//more samples needed 00:21 2017-05-19
+		or (
+		pe.rich_signature.version(50727) 
+		) 		
+		and ((pe.linker_version.major == 8) and (pe.linker_version.minor == 0 ))
 }
 
 rule MSVC2008
@@ -117,7 +129,13 @@ rule MSVC2010
 		date = "2016-08"
 		linker = "10.00"
 	condition:
-		pe.rich_signature.version(40219) and not (pe.rich_signature.version(40629)) and ( pe.rich_signature.version(30729) or pe.rich_signature.version(40310) or pe.rich_signature.version(4035) ) and (pe.rich_signature.toolid(171) or pe.rich_signature.toolid(174) or pe.rich_signature.toolid(170)  )  or
+		pe.rich_signature.version(40219) and 
+		//dunno why this is avoided 22:53 2017-06-27
+		//not (pe.rich_signature.version(40629)) and
+ 
+		( pe.rich_signature.version(30729) or pe.rich_signature.version(40310) or pe.rich_signature.version(4035) ) and 
+		(pe.rich_signature.toolid(171) or pe.rich_signature.toolid(174) or pe.rich_signature.toolid(175) or pe.rich_signature.toolid(170)  )  or
+
 		pe.rich_signature.version(20804) and pe.rich_signature.version(50727) and pe.rich_signature.toolid(170) or
 		pe.rich_signature.version(30319) and (pe.linker_version.major == 10) and (pe.linker_version.minor == 0 )
 }
