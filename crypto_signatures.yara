@@ -35,17 +35,58 @@ rule Advapi_Hash_API {
 		$advapi32 and ($CryptCreateHash and $CryptHashData and $CryptAcquireContext)
 }
 
+rule BigLib_BigMod {
+	meta:
+		author = "_pusher_"
+		description = "Look for BigLib BigMod"
+		date = "2016-10"
+	strings:
+		$c0 = { 55 8B EC 83 C4 FC 53 51 57 56 8B 7D 0C 8B 1F 85 DB 0F 84 F7 00 00 00 8B 75 08 8B 0E 85 C9 0F 84 F7 00 00 00 FF 75 0C FF 75 08 E8 ?? ?? ?? ?? 0F 8C FA 00 00 00 0F 84 E0 00 00 00 6A 00 E8 ?? ?? ?? ?? 89 45 FC C1 E1 05 49 8B 7D FC C7 07 01 00 00 00 0F A3 4E 04 72 03 49 EB F7 8B 17 8D 5F 04 F8 90 D1 13 8D 5B 04 4A 75 F8 73 04 FF 03 FF 07 0F A3 4E 04 0F 92 C0 08 47 04 8B 55 0C 8B 1A 39 1F 72 67 77 1D 51 8B 0F 8D 1C 8D 00 00 00 00 03 FB 8B F2 03 F3 FD F3 A7 FC 59 8B 75 08 8B 7D FC 77 48 51 8B 75 0C 8B 1F 8B 0E 2B D9 83 C6 04 83 C7 04 F8 8D 49 00 8B 16 19 17 8D 76 04 8D 7F 04 49 75 F3 73 0A 90 83 1F 00 8D 7F 04 4B 72 F7 8B 75 FC 83 7F FC 00 75 0B FF 0E 74 05 83 EF 04 EB F1 FF 06 59 8B 75 08 8B 7D FC 49 0F 89 6A FF FF FF FF 75 10 FF 75 FC E8 ?? ?? ?? ?? FF 75 FC E8 ?? ?? ?? ?? 33 C0 5E 5F 59 5B C9 C2 0C 00 B8 FF FF FF FF 5E 5F 59 5B C9 C2 0C 00 8B 7D 10 33 C0 8B 0F 41 F3 AB 33 C0 5E 5F 59 5B C9 C2 0C 00 }
+	condition:
+		$c0
+}
+
+rule BigLib_BigPowMod {
+	meta:
+		author = "_pusher_"
+		description = "Look for BigLib BigPowMod"
+		date = "2016-10"
+	strings:
+		$c0 = { 55 8B EC 53 51 57 56 8B 5D 10 83 3B 00 74 5D 6A 01 E8 ?? ?? ?? ?? 8B F8 8B 75 0C 8B 0E 85 C9 74 32 C1 E1 05 49 8D 49 00 57 57 57 E8 ?? ?? ?? ?? 57 53 57 E8 ?? ?? ?? ?? 0F A3 4E 04 73 12 57 FF 75 08 57 E8 ?? ?? ?? ?? 57 53 57 E8 ?? ?? ?? ?? 49 79 D5 FF 75 14 57 E8 ?? ?? ?? ?? 57 E8 ?? ?? ?? ?? 33 C0 5E 5F 59 5B C9 C2 10 00 B8 FF FF FF FF 5E 5F 59 5B C9 C2 10 00 }
+	condition:
+		$c0
+}
+
 rule Crypt32_CryptBinaryToString_API {
 	meta:
 		author = "_pusher_"
-		description = "Looks for crypt32 CryptBinaryToStringA function"
+		description = "Looks for crypt32 CryptBinaryToStringA/W function"
 		date = "2016-08"
 	strings:
 		$crypt32 = "crypt32.dll" wide ascii nocase
-		$CryptBinaryToStringA = "CryptBinaryToStringA" wide ascii
+		$CryptBinaryToString = "CryptBinaryToString" wide ascii
 	condition:
-		$crypt32 and ($CryptBinaryToStringA)
+		$crypt32 and ($CryptBinaryToString)
 }
+
+
+rule MurmurHash3_Constants {
+	meta:
+		author = "_pusher_"
+		description = "Look for MurmurHash3 constants"
+		date = "2017-05"
+		version = "0.1"
+	strings:
+		$c0 = { 512D9ECC }
+		$c1 = { 9335871B }
+		//N
+		$c2 = { 6BCAEB85 }
+		$c3 = { 35AEB2C2 }
+	condition:
+		all of them
+}
+
+
 
 rule CRC32c_poly_Constant {
 	meta:
@@ -237,6 +278,34 @@ rule RC6_Constants {
 	condition:
 		2 of them
 }
+
+
+rule RIPEMD128_Constants {
+	meta:
+		author = "_pusher_"
+		description = "Look for RIPEMD constants"
+		date = "2017-05"
+		version = "0.1"
+	strings:
+		$c0 = { 01234567 }
+		$c1 = { 89ABCDEF }
+		$c2 = { FEDCBA98 }
+		$c3 = { 76543210 }
+		$c4 = { 9979825A }
+		$c5 = { A1EBD96E }
+
+		$c6 = { DCBC1B8F }
+		$c7 = { E68BA250 }
+		$c8 = { 24D14D5C }
+		$c9 = { F33E706D }
+
+		//not ripemd128 if:
+		//$a0 = { 4EFD53A9 }
+		//$a1 = { E9766D7A }
+	condition:
+		all of ($c*)
+}
+
 
 rule RIPEMD160_Constants {
 	meta:
@@ -489,8 +558,9 @@ rule FGint_ConvertHexStringToBase256String
 		description = "FGint ConvertHexStringToBase256String"
 	strings:
 		$c0 = { 55 8B EC 83 C4 F0 53 56 33 C9 89 4D F0 89 55 F8 89 45 FC 8B 45 FC E8 ?? ?? ?? ?? 33 C0 55 68 ?? ?? ?? ?? 64 FF 30 64 89 20 8B 45 F8 E8 ?? ?? ?? ?? 8B 45 FC E8 ?? ?? ?? ?? D1 F8 79 03 83 D0 00 85 C0 7E 5F 89 45 F4 BE 01 00 00 00 8B C6 03 C0 8B 55 FC 8A 54 02 FF 8B 4D FC 8A 44 01 FE 3C 3A 73 0A 8B D8 80 EB 30 C1 E3 04 EB 08 8B D8 80 EB 37 C1 E3 04 80 FA 3A 73 07 80 EA 30 0A DA EB 05 80 EA 37 0A DA 8D 45 F0 8B D3 }
+		$c1 = { 55 8B EC 83 C4 EC 53 56 33 C9 89 4D EC 89 4D F4 89 55 F8 89 45 FC 8B 45 FC E8 ?? ?? ?? ?? 33 C0 55 68 ?? ?? ?? ?? 64 FF 30 64 89 20 8B 45 F8 E8 ?? ?? ?? ?? 8B 45 FC E8 ?? ?? ?? ?? 25 ?? ?? ?? ?? 79 05 48 83 C8 FE 40 48 75 12 8D 45 F4 8B 4D FC BA ?? ?? ?? ?? E8 ?? ?? ?? ?? EB 0B 8D 45 F4 8B 55 FC E8 ?? ?? ?? ?? 8B 45 F4 E8 ?? ?? ?? ?? D1 F8 79 03 83 D0 00 85 C0 7E 62 89 45 F0 BE ?? ?? ?? ?? 8B C6 03 C0 8B 55 F4 8A 54 02 FF 8B 4D F4 8A 44 01 FE 3C 3A 73 0A 8B D8 80 EB 30 C1 E3 04 EB 08 8B D8 80 EB 37 C1 E3 04 80 FA 3A 73 07 80 EA 30 0A DA EB 08 80 EA 37 80 E2 0F 0A DA 8D 45 EC 8B D3 }
 	condition:
-		$c0
+		any of them
 }
 
 rule FGint_Base256StringToGInt
@@ -1189,7 +1259,8 @@ rule Delphi_CompareCall {
 	strings:
 		$c0 = { 53 56 57 89 C6 89 D7 39 D0 0F 84 8F 00 00 00 85 F6 74 68 85 FF 74 6B 8B 46 FC 8B 57 FC 29 D0 77 02 01 C2 52 C1 EA 02 74 26 8B 0E 8B 1F 39 D9 75 58 4A 74 15 8B 4E 04 8B 5F 04 39 D9 75 4B 83 C6 08 83 C7 08 4A 75 E2 EB 06 83 C6 04 83 C7 04 5A 83 E2 03 74 22 8B 0E 8B 1F 38 D9 75 41 4A 74 17 38 FD 75 3A 4A 74 10 81 E3 00 00 FF 00 81 E1 00 00 FF 00 39 D9 75 27 01 C0 EB 23 8B 57 FC 29 D0 EB 1C 8B 46 FC 29 D0 EB 15 5A 38 D9 75 10 38 FD 75 0C C1 E9 10 C1 EB 10 38 D9 75 02 38 FD 5F 5E 5B C3 }
 		//newer delphi
-		$c1 = { 39 D0 74 30 85 D0 74 22 8B 48 FC 3B 4A FC 75 24 01 C9 01 C8 01 CA F7 D9 53 8B 1C 01 3B 1C 11 75 07 83 C1 04 78 F3 31 C0 5B C3}
+		$c1 = { 39 D0 74 30 85 D0 74 22 8B 48 FC 3B 4A FC 75 24 01 C9 01 C8 01 CA F7 D9 53 8B 1C 01 3B 1C 11 75 07 83 C1 04 78 F3 31 C0 5B C3 }
+		$c3 = { 39 D0 74 37 85 D0 74 38 80 78 F6 01 75 42 80 7A F6 01 75 3D 8B 48 FC 3B 4A FC 75 1F 53 8D 54 11 FC 8D 5C 01 FC F7 D9 8B 03 3B 02 75 0D 83 C1 04 79 0A 8B 04 19 3B 04 11 74 F3 5B C3 }
 		//x64
 		$c2 = { 41 56 41 55 57 56 53 48 83 EC 20 48 89 D3 48 3B CB 75 05 48 33 C0 EB 74 48 85 C9 75 07 8B 43 FC F7 D8 EB 68 48 85 DB 75 05 8B 41 FC EB 5E 8B 79 FC 44 8B 6B FC 89 FE 41 3B F5 7E 03 44 89 EE E8 ?? ?? ?? ?? 49 89 C6 48 89 D9 E8 ?? ?? ?? ?? 48 89 C1 85 F6 7E 30 41 0F B7 06 0F B7 11 2B C2 85 C0 75 29 83 FE 01 74 1E 41 0F B7 46 02 0F B7 51 02 2B C2 85 C0 75 15 49 83 C6 04 48 83 C1 04 83 EE 02 85 F6 7F D0 90 8B C7 41 2B C5 48 83 C4 20 5B 5E 5F 41 5D 41 5E C3 }
  	condition:
@@ -1265,27 +1336,18 @@ rule Unknown_Random {
 		$c0
 }
 
-rule VC6_Random {
+rule VC_Random {
 	meta:
 		author = "_pusher_"
-		description = "Look for Random function"
-		date = "2016-02"
-	strings:
-		$c0 = { A1 ?? ?? ?? ?? 69 C0 FD 43 03 00 05 C3 9E 26 00 A3 ?? ?? ?? ?? C1 F8 10 25 FF 7F 00 00 C3 }
-	condition:
-		$c0
-}
-
-rule VC8_Random {
-	meta:
-		author = "_pusher_"
-		description = "Look for Random function"
-		date = "2016-01"
-		version = "0.1"
+		description = "Look for VC Random function"
+		date = "2016-10"
+		version = "0.2"
 	strings:
 		$c0 = { E8 ?? ?? ?? ?? 8B 48 14 69 C9 FD 43 03 00 81 C1 C3 9E 26 00 89 48 14 8B C1 C1 E8 10 25 FF 7F 00 00 C3 }
+		$c1 = { E8 ?? ?? ?? ?? 69 48 14 FD 43 03 00 81 C1 C3 9E 26 00 89 48 14 C1 E9 10 81 E1 FF 7F 00 00 8B C1 C3 }
+		$c2 = { A1 ?? ?? ?? ?? 69 C0 FD 43 03 00 05 C3 9E 26 00 A3 ?? ?? ?? ?? C1 F8 10 25 FF 7F 00 00 C3 }
 	condition:
-		$c0
+		any of ($c*)
 }
 
 rule DCP_RIJNDAEL_Init {
