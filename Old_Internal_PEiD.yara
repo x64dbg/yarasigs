@@ -44,8 +44,8 @@ Armadillo 2.10 -> Silicon Realms Toolworks
 Armadillo 2.10 beta2 -> Silicon Realms Toolworks
 Armadillo 2.10 beta3 -> Silicon Realms Toolworks
 Armadillo 2.20 -> Silicon Realms Toolworks
-Armadillo 1.xx - 2.xx -> Silicon Realms Toolworks
 */
+
 rule armd71
 {
 	meta:
